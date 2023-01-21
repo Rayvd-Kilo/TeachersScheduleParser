@@ -1,6 +1,6 @@
-using ExelParser.Runtime.Enums;
+using TeachersScheduleParser.Runtime.Enums;
 
-namespace ExelParser.Runtime.Utils
+namespace TeachersScheduleParser.Runtime.Utils
 {
     public static class SubjectTypeExtensions
     {

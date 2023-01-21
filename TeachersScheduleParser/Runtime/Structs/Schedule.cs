@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace ExelParser.Runtime.Structs
+namespace TeachersScheduleParser.Runtime.Structs
 {
     [Serializable]
     public struct Schedule

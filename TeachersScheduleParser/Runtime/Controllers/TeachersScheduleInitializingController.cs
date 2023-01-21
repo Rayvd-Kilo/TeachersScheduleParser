@@ -6,11 +6,11 @@ using DataReaders.Readers.DataSetReader;
 using DataReaders.Readers.RegexReaders;
 using DataReaders.ValueTypes;
 
-using ExelParser.Runtime.Factories;
-using ExelParser.Runtime.Services;
-using ExelParser.Runtime.Structs;
+using TeachersScheduleParser.Runtime.Factories;
+using TeachersScheduleParser.Runtime.Services;
+using TeachersScheduleParser.Runtime.Structs;
 
-namespace ExelParser.Runtime.Controllers
+namespace TeachersScheduleParser.Runtime.Controllers
 {
     public class TeachersScheduleInitializingController : IDisposable
     {

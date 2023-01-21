@@ -1,6 +1,6 @@
 using System.Windows.Controls;
 
-namespace ExelParser.Runtime.Views
+namespace TeachersScheduleParser.Runtime.Views
 {
     public class ResultView
     {

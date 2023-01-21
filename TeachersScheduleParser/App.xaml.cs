@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Windows;
 
-using ExelParser.Runtime.Utils;
+using TeachersScheduleParser.Runtime.Utils;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

@@ -1,8 +1,8 @@
 using System;
 
-using ExelParser.Runtime.Enums;
+using TeachersScheduleParser.Runtime.Enums;
 
-namespace ExelParser.Runtime.Structs
+namespace TeachersScheduleParser.Runtime.Structs
 {
     [Serializable]
     public struct Subject

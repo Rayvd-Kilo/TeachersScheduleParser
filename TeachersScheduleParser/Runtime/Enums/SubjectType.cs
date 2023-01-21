@@ -1,4 +1,4 @@
-namespace ExelParser.Runtime.Enums
+namespace TeachersScheduleParser.Runtime.Enums
 {
     public enum SubjectType
     {

@@ -3,7 +3,7 @@ using System.Windows;
 
 using DataReaders.ValueTypes;
 
-using ExelParser.Runtime.Factories;
+using TeachersScheduleParser.Runtime.Factories;
 
 using Microsoft.Win32;
 

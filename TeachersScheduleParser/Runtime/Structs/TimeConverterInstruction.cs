@@ -2,7 +2,7 @@ using System;
 
 using Newtonsoft.Json;
 
-namespace ExelParser.Runtime.Structs
+namespace TeachersScheduleParser.Runtime.Structs
 {
     [Serializable]
     public struct TimeConverterInstruction

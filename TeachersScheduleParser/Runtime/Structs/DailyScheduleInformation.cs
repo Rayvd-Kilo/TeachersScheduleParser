@@ -1,6 +1,6 @@
 using DataReaders.ValueTypes;
 
-namespace ExelParser.Runtime.Structs
+namespace TeachersScheduleParser.Runtime.Structs
 {
     public struct DailyScheduleInformation
     {

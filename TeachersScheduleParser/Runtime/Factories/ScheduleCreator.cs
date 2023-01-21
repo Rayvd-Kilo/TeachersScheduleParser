@@ -3,9 +3,9 @@ using System.Linq;
 
 using DataReaders.ValueTypes;
 
-using ExelParser.Runtime.Structs;
+using TeachersScheduleParser.Runtime.Structs;
 
-namespace ExelParser.Runtime.Factories
+namespace TeachersScheduleParser.Runtime.Factories
 {
     public class ScheduleCreator
     {

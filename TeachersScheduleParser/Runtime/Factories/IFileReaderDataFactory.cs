@@ -1,4 +1,4 @@
-namespace ExelParser.Runtime.Factories
+namespace TeachersScheduleParser.Runtime.Factories
 {
     public interface IFileReaderDataFactory<out T, in D>
     {

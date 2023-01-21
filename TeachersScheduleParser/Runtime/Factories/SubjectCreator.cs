@@ -2,10 +2,10 @@ using DataReaders.Readers;
 using DataReaders.Readers.Interfaces;
 using DataReaders.Readers.JSONReaders;
 
-using ExelParser.Runtime.Structs;
-using ExelParser.Runtime.Utils;
+using TeachersScheduleParser.Runtime.Structs;
+using TeachersScheduleParser.Runtime.Utils;
 
-namespace ExelParser.Runtime.Factories
+namespace TeachersScheduleParser.Runtime.Factories
 {
     public class SubjectCreator
     {

@@ -1,9 +1,9 @@
 using System;
 using System.Text;
 
-using ExelParser.Runtime.Structs;
+using TeachersScheduleParser.Runtime.Structs;
 
-namespace ExelParser.Runtime.Models
+namespace TeachersScheduleParser.Runtime.Models
 {
     public class ResultModel
     {

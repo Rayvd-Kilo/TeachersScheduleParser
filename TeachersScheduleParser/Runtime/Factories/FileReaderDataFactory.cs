@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 
-namespace ExelParser.Runtime.Factories
+namespace TeachersScheduleParser.Runtime.Factories
 {
     public class FileReaderDataFactory<T, D> : IFileReaderDataFactory<T, D>
     {

@@ -1,6 +1,6 @@
-using ExelParser.Runtime.Structs;
+using TeachersScheduleParser.Runtime.Structs;
 
-namespace ExelParser.Runtime.Utils
+namespace TeachersScheduleParser.Runtime.Utils
 {
     public static class SubjectOrderToTimeConverter
     {

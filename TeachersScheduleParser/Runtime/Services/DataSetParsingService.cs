@@ -6,9 +6,9 @@ using DataReaders.Readers.DataSetReader;
 using DataReaders.Readers.RegexReaders;
 using DataReaders.ValueTypes;
 
-using ExelParser.Runtime.Structs;
+using TeachersScheduleParser.Runtime.Structs;
 
-namespace ExelParser.Runtime.Services
+namespace TeachersScheduleParser.Runtime.Services
 {
     public class DataSetParsingService
     {

@@ -7,11 +7,11 @@ using DataReaders.Readers.Interfaces;
 using DataReaders.Readers.RegexReaders;
 using DataReaders.ValueTypes;
 
-using ExelParser.Runtime.Factories;
-
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ExelParser.Runtime.Utils
+using TeachersScheduleParser.Runtime.Factories;
+
+namespace TeachersScheduleParser.Runtime.Utils
 {
     public static class ServiceExtensions
     {
