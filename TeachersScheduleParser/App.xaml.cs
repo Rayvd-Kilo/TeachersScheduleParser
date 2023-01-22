@@ -6,12 +6,16 @@ using TeachersScheduleParser.Runtime.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using TeachersScheduleParser.Runtime.Factories;
+using TeachersScheduleParser.Runtime.Services;
+using TeachersScheduleParser.Runtime.Structs;
+
 namespace TeachersScheduleParser
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
         public static IHost AppHost { get; private set; }
 
@@ -51,6 +55,10 @@ namespace TeachersScheduleParser
                 services.AddDataSetFactory();
 
                 services.AddDateFactory();
+
+                services.AddSingleton<DataSetParsingService>();
+                
+                services.AddTransient<IFileReaderDataFactory<Schedule[], string>, TeachersSchedulesFactory>();
             })).Build();
         }
     }

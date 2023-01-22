@@ -1,11 +1,9 @@
-﻿using System.Data;
-using System.Windows;
-
-using DataReaders.ValueTypes;
-
-using TeachersScheduleParser.Runtime.Factories;
+﻿using System.Windows;
 
 using Microsoft.Win32;
+
+using TeachersScheduleParser.Runtime.Factories;
+using TeachersScheduleParser.Runtime.Structs;
 
 namespace TeachersScheduleParser
 {
@@ -14,15 +12,11 @@ namespace TeachersScheduleParser
     /// </summary>
     public partial class MainWindow
     {
-        private readonly IFileReaderDataFactory<DataSet, string> _dataSetFactory;
-        private readonly IFileReaderDataFactory<DataInMatrix<string>[], DataSet> _datesFactory;
+        private readonly IFileReaderDataFactory<Schedule[], string> _scheduleFactory;
 
-        public MainWindow(
-            IFileReaderDataFactory<DataSet, string> dataSetFactory,
-            IFileReaderDataFactory<DataInMatrix<string>[], DataSet> datesFactory)
+        public MainWindow(IFileReaderDataFactory<Schedule[], string> scheduleFactory)
         {
-            _dataSetFactory = dataSetFactory;
-            _datesFactory = datesFactory;
+            _scheduleFactory = scheduleFactory;
             InitializeComponent();
         }
 
@@ -40,9 +34,7 @@ namespace TeachersScheduleParser
             {
                 string filePath = openFileDialog.FileName;
 
-                var dataSet = _dataSetFactory.Create(filePath);
-
-                var dates = _datesFactory.Create(dataSet);
+                var schedules = _scheduleFactory.Create(filePath);
             }
         }
     }
