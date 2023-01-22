@@ -5,7 +5,7 @@ using DataReaders.Readers.JSONReaders;
 using TeachersScheduleParser.Runtime.Structs;
 using TeachersScheduleParser.Runtime.Utils;
 
-namespace TeachersScheduleParser.Runtime.Factories
+namespace TeachersScheduleParser.Runtime.Creators
 {
     public class SubjectCreator
     {
@@ -51,7 +51,13 @@ namespace TeachersScheduleParser.Runtime.Factories
         
         private static string GetPath(string fileName)
         {
-            return $"C:/WorkingSelf/ExelParser/ExelParser/ExelParser/bin/Debug/{fileName}";
+            var executablePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
+
+            var path = System.IO.Path.GetDirectoryName(executablePath);
+
+            path = path.Remove(0, 6);
+
+            return $"{path}/{fileName}";
         }
     }
 }

@@ -5,7 +5,7 @@ using DataReaders.Utils;
 
 using TeachersScheduleParser.Runtime.Structs;
 
-namespace TeachersScheduleParser.Runtime.Factories
+namespace TeachersScheduleParser.Runtime.Creators
 {
     public class DailyScheduleCreator
     {
