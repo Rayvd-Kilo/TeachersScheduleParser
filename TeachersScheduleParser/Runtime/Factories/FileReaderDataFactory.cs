@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 
 namespace TeachersScheduleParser.Runtime.Factories
 {
