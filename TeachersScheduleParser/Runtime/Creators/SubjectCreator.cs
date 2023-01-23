@@ -1,6 +1,7 @@
 using DataReaders.Readers;
 using DataReaders.Readers.Interfaces;
 using DataReaders.Readers.JSONReaders;
+using DataReaders.Utils;
 
 using TeachersScheduleParser.Runtime.Structs;
 using TeachersScheduleParser.Runtime.Utils;
@@ -9,8 +10,8 @@ namespace TeachersScheduleParser.Runtime.Creators
 {
     public class SubjectCreator
     {
-        private static readonly string DailyInstructionsFilePath = GetPath("daily.json");
-        private static readonly string WeekendInstructionsFilePath = GetPath("weekend.json");
+        private readonly string _dailyInstructionsFilePath = FilePathGetter.GetPath("daily.json");
+        private readonly string _weekendInstructionsFilePath = FilePathGetter.GetPath("weekend.json");
 
         private readonly TimeConverterInstruction _dailyInstruction;
 
@@ -22,9 +23,9 @@ namespace TeachersScheduleParser.Runtime.Creators
 
             IFileReader<TimeConverterInstruction> fileReader = new FileStreamDataReader<TimeConverterInstruction>();
 
-            _dailyInstruction = dataReader.ReadData(fileReader, DailyInstructionsFilePath);
+            _dailyInstruction = dataReader.ReadData(fileReader, _dailyInstructionsFilePath);
 
-            _weekendInstruction = dataReader.ReadData(fileReader, WeekendInstructionsFilePath);
+            _weekendInstruction = dataReader.ReadData(fileReader, _weekendInstructionsFilePath);
         }
         
         public Subject CreateSubject(string[] rowData, bool isDaily)
@@ -47,17 +48,6 @@ namespace TeachersScheduleParser.Runtime.Creators
         {
             return SubjectOrderToTimeConverter.ConvertOrderNumberToMinutes(subjectNumber,
                 isDaily ? _dailyInstruction : _weekendInstruction);
-        }
-        
-        private static string GetPath(string fileName)
-        {
-            var executablePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
-
-            var path = System.IO.Path.GetDirectoryName(executablePath);
-
-            path = path.Remove(0, 6);
-
-            return $"{path}/{fileName}";
         }
     }
 }
