@@ -8,7 +8,7 @@ namespace TeachersScheduleParser.Runtime.Utils
         {
             var minutesValue = converterInstruction.FirstSubjectBeginTime;
 
-            for (int i = 1; i < orderNumber; i++)
+            for (var i = 1; i < orderNumber; i++)
             {
                 minutesValue += converterInstruction.SubjectDuration + converterInstruction.BreakTime[i - 1];
             }
