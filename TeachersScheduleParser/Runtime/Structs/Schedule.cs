@@ -21,7 +21,7 @@ namespace TeachersScheduleParser.Runtime.Structs
         {
             var stringBuilder = new StringBuilder();
 
-            stringBuilder.Append(TeacherData);
+            stringBuilder.AppendLine(TeacherData.FullName);
 
             foreach (var dailySchedule in DailySchedules)
             {

@@ -76,7 +76,7 @@ namespace TeachersScheduleParser.Runtime.Services
                         ? k + (int) currentDate.MatrixIndexes.Y + offset
                         : (k - 1) + (int) currentDate.MatrixIndexes.Y + offset;
                 
-                    matrixData.Data[j, k] = data.Tables[0].Rows[row][column].ToString();
+                    matrixData.Data[j, k] = data.Tables[0].Rows[row][column].ToString()!;
                 }
             }
 

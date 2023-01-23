@@ -54,12 +54,12 @@ namespace TeachersScheduleParser.Runtime.Creators
                 }
             }
 
-            return new DailySchedule(dateValue, subjects.ToArray());
+            return new DailySchedule(dateValue, subjects.OrderBy(x => x.SubjectOrderNumber).ToArray());
         }
 
         private Subject RewriteSubjectGroup(Subject oldSubject, string newGroupValue)
         {
-            var newGroupText = oldSubject.Group + " | " + newGroupValue;
+            var newGroupText = oldSubject.Group + "," + newGroupValue;
 
             return new Subject(oldSubject.SubjectOrderNumber, oldSubject.SubjectTime, oldSubject.SubjectName,
                 oldSubject.SubjectType, oldSubject.Cabinet, newGroupText);
