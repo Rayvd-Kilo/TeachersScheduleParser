@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Windows;
 
 using TeachersScheduleParser.Runtime.Utils;
@@ -6,7 +7,9 @@ using TeachersScheduleParser.Runtime.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using TeachersScheduleParser.Runtime.Controllers;
 using TeachersScheduleParser.Runtime.Factories;
+using TeachersScheduleParser.Runtime.Interfaces;
 using TeachersScheduleParser.Runtime.Services;
 using TeachersScheduleParser.Runtime.Structs;
 
@@ -17,7 +20,7 @@ namespace TeachersScheduleParser
     /// </summary>
     public partial class App
     {
-        public static IHost AppHost { get; private set; }
+        public static IHost? AppHost { get; private set; }
 
         private readonly CancellationTokenSource _cancellationTokenSource;
         
@@ -30,10 +33,18 @@ namespace TeachersScheduleParser
         
         protected override async void OnStartup(StartupEventArgs e)
         {
-            await AppHost.StartAsync(_cancellationTokenSource.Token);
+            await AppHost!.StartAsync(_cancellationTokenSource.Token);
 
             var entryPointForm = AppHost.Services.GetRequiredService<MainWindow>();
+
+            var telegramBotController = AppHost.Services.GetRequiredService<TelegramBotController>();
+
+            var schedulesReader = AppHost.Services.GetRequiredService<IDataContainerService<Schedule[]>>();
             
+            telegramBotController.Initialize();
+            
+            telegramBotController.SetSchedules(schedulesReader.GetData() ?? Array.Empty<Schedule>());
+
             entryPointForm.Show();
             
             base.OnStartup(e);
@@ -41,14 +52,14 @@ namespace TeachersScheduleParser
 
         protected override async void OnExit(ExitEventArgs e)
         {
-            await AppHost.StartAsync(_cancellationTokenSource.Token);
+            await AppHost!.StopAsync(_cancellationTokenSource.Token);
             
             base.OnExit(e);
         }
 
         private void InitializeBuilder()
         {
-            AppHost = Host.CreateDefaultBuilder().ConfigureServices(((context, services) =>
+            AppHost = Host.CreateDefaultBuilder().ConfigureServices(((_, services) =>
             {
                 services.AddSingleton<MainWindow>();
 
@@ -56,9 +67,13 @@ namespace TeachersScheduleParser
 
                 services.AddDateFactory();
 
+                services.AddSchedulesReaderService();
+
                 services.AddSingleton<DataSetParsingService>();
                 
                 services.AddTransient<IFileReaderDataFactory<Schedule[], string>, TeachersSchedulesFactory>();
+
+                services.AddSingleton<TelegramBotController>();
             })).Build();
         }
     }

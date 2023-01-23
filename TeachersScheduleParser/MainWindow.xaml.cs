@@ -2,7 +2,8 @@
 
 using Microsoft.Win32;
 
-using TeachersScheduleParser.Runtime.Factories;
+using TeachersScheduleParser.Runtime.Controllers;
+using TeachersScheduleParser.Runtime.Interfaces;
 using TeachersScheduleParser.Runtime.Structs;
 
 namespace TeachersScheduleParser
@@ -13,10 +14,16 @@ namespace TeachersScheduleParser
     public partial class MainWindow
     {
         private readonly IFileReaderDataFactory<Schedule[], string> _scheduleFactory;
+        private readonly TelegramBotController _telegramBotController;
+        private readonly IDataContainerService<Schedule[]> _dataContainerService;
 
-        public MainWindow(IFileReaderDataFactory<Schedule[], string> scheduleFactory)
+        public MainWindow(IFileReaderDataFactory<Schedule[], string> scheduleFactory,
+            TelegramBotController telegramBotController,
+            IDataContainerService<Schedule[]> dataContainerService)
         {
             _scheduleFactory = scheduleFactory;
+            _telegramBotController = telegramBotController;
+            _dataContainerService = dataContainerService;
             InitializeComponent();
         }
 
@@ -28,13 +35,17 @@ namespace TeachersScheduleParser
                 Filter = "Excel Files (*.xlsx)|*.xlsx"
             };
             
-            bool? result = openFileDialog.ShowDialog();
+            var result = openFileDialog.ShowDialog();
             
             if (result == true)
             {
-                string filePath = openFileDialog.FileName;
+                var filePath = openFileDialog.FileName;
 
                 var schedules = _scheduleFactory.Create(filePath);
+                
+                _dataContainerService.SaveData(schedules);
+                
+                _telegramBotController.SetSchedules(schedules);
             }
         }
     }
