@@ -31,7 +31,9 @@ namespace TeachersScheduleParser.Runtime.Structs
 
         public override string ToString()
         {
-            return $"{SubjectTime} | {SubjectOrderNumber}. {SubjectName} || {SubjectType} | {Group} | {Cabinet};";
+            return $"{SubjectOrderNumber}. {SubjectName}; \n" +
+                   $" Группы: {Group}; \n" +
+                   $" Кабинет: {Cabinet};";
         }
     }
 }
