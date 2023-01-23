@@ -1,5 +1,7 @@
 using System;
 
+using TeachersScheduleParser.Runtime.Interfaces;
+
 namespace TeachersScheduleParser.Runtime.Factories
 {
     public class FileReaderDataFactory<T, D> : IFileReaderDataFactory<T, D>
