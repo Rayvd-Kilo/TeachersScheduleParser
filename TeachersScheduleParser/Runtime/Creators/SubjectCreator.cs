@@ -1,6 +1,7 @@
 using DataReaders.Readers;
 using DataReaders.Readers.Interfaces;
 using DataReaders.Readers.JSONReaders;
+using DataReaders.Readers.RegexReaders;
 using DataReaders.Utils;
 
 using TeachersScheduleParser.Runtime.Structs;
@@ -10,6 +11,7 @@ namespace TeachersScheduleParser.Runtime.Creators
 {
     public class SubjectCreator
     {
+        private readonly BaseRegexReader _regexReader;
         private readonly string _dailyInstructionsFilePath = FilePathGetter.GetPath("daily.json");
         private readonly string _weekendInstructionsFilePath = FilePathGetter.GetPath("weekend.json");
 
@@ -17,8 +19,9 @@ namespace TeachersScheduleParser.Runtime.Creators
 
         private readonly TimeConverterInstruction _weekendInstruction;
         
-        public SubjectCreator()
+        public SubjectCreator(BaseRegexReader regexReader)
         {
+            _regexReader = regexReader;
             IDataReader<TimeConverterInstruction> dataReader = new JsonReader<TimeConverterInstruction>();
 
             IFileReader<TimeConverterInstruction> fileReader = new FileStreamDataReader<TimeConverterInstruction>();
@@ -38,7 +41,7 @@ namespace TeachersScheduleParser.Runtime.Creators
 
             var subjectCabinet = rowData[4];
 
-            var subjectGroup = rowData[0];
+            var subjectGroup = _regexReader.GetMatch(rowData[0]).Value;
 
             return new Subject(subjectNumber, subjectTime.ConvertToStringTime(), subjectName,
                 subjectName.ConvertToSubject(), subjectCabinet, subjectGroup);

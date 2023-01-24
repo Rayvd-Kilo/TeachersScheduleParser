@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using DataReaders.Readers.RegexReaders;
 using DataReaders.Utils;
 
 using TeachersScheduleParser.Runtime.Structs;
@@ -11,11 +12,17 @@ namespace TeachersScheduleParser.Runtime.Creators
     {
         private const string WeekendKey = "СУББОТА";
 
+        private const string GroupRegexPattern = "([А-Я]*\\-[0-9]{2}\\-+[А-Я]*(?:\\-+[0-9]){0,1})";
+
         private readonly SubjectCreator _subjectCreator;
+
+        private readonly BaseRegexReader _regexReader;
 
         public DailyScheduleCreator()
         {
-            _subjectCreator = new SubjectCreator();
+            _regexReader = new BaseRegexReader(GroupRegexPattern);
+
+            _subjectCreator = new SubjectCreator(_regexReader);
         }
 
         public DailySchedule CreateDailySchedule(PersonData targetPerson,
@@ -59,7 +66,7 @@ namespace TeachersScheduleParser.Runtime.Creators
 
         private Subject RewriteSubjectGroup(Subject oldSubject, string newGroupValue)
         {
-            var newGroupText = oldSubject.Group + "," + newGroupValue;
+            var newGroupText = _regexReader.GetMatch(oldSubject.Group).Value + "," + _regexReader.GetMatch(newGroupValue).Value;
 
             return new Subject(oldSubject.SubjectOrderNumber, oldSubject.SubjectTime, oldSubject.SubjectName,
                 oldSubject.SubjectType, oldSubject.Cabinet, newGroupText);
