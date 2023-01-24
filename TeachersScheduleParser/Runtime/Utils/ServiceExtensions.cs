@@ -40,11 +40,11 @@ namespace TeachersScheduleParser.Runtime.Utils
         {
             serviceCollection.AddTransient<ITableReader<DataInMatrix<string>>, TableReader<DataInMatrix<string>>>();
 
-            serviceCollection.AddTransient<DateReader>();
+            serviceCollection.AddTransient<DateRegexTableReader>();
             
             serviceCollection.AddSingleton<Func<DataSet, DataInMatrix<string>[]>>(x => dataSet =>
             {
-                var reader = x.GetService<DateReader>();
+                var reader = x.GetService<DateRegexTableReader>();
 
                 return reader!.ReadData(dataSet.Tables[0]);
             });

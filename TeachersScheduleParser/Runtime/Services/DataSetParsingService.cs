@@ -16,7 +16,7 @@ namespace TeachersScheduleParser.Runtime.Services
         {
             var fullNamesList = new List<PersonData>();
 
-            FullNameReader fullNameReader = new FullNameReader(new TableReader<string>());
+            FullNameRegexTableReader fullNameReader = new FullNameRegexTableReader(new TableReader<string>());
 
             var fullNames = fullNameReader.ReadData(fileDataSet.Tables[0]);
 
