@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 
 using TeachersScheduleParser.Runtime.Enums;
 using TeachersScheduleParser.Runtime.Interfaces;
-using TeachersScheduleParser.Runtime.Models;
 using TeachersScheduleParser.Runtime.Structs;
 
 using Telegram.Bot;
@@ -14,14 +13,14 @@ namespace TeachersScheduleParser.Runtime.Utils;
 
 public class BotUpdateHandler : IAsyncResultHandler<Update>
 {
-    private readonly ClientDataModel _clientsData;
+    private readonly IDataContainerModel<ClientData[]> _clientsData;
 
-    public BotUpdateHandler(ClientDataModel clientsData)
+    public BotUpdateHandler(IDataContainerModel<ClientData[]> clientsData)
     {
         _clientsData = clientsData;
     }
-    
-    public Task HandleResultAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+
+    Task IAsyncResultHandler<Update>.HandleResultAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
         if (update.Message is not { } message) return Task.CompletedTask;
         
@@ -30,16 +29,39 @@ public class BotUpdateHandler : IAsyncResultHandler<Update>
         var chatId = message.Chat.Id;
 
         Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
+
+        if (IsCommand(messageText, chatId)) return Task.CompletedTask;
         
-        if (messageText.Contains("start"))
-        {
-            _clientsData.SaveData(new ClientData(chatId, UpdateType.ClientSubscribe));
-
-            return Task.CompletedTask;
-        }
-
-        _clientsData.SaveData(new ClientData(chatId, UpdateType.ScheduleRequired));
+        _clientsData.SaveData(new[] {new ClientData(chatId, UpdateType.ScheduleRequired, messageText)});
         
         return Task.CompletedTask;
+    }
+
+    private bool IsCommand(string message, long chatId)
+    {
+        switch (message)
+        {
+            case "/start":
+                _clientsData.SaveData(new []{new ClientData(chatId, UpdateType.ClientSubscribe, message)});
+
+                return true;
+            case "/update":
+                _clientsData.SaveData(new []{new ClientData(chatId, UpdateType.DataUpdateRequired, message)});
+            
+                return true;
+            case "/stop":
+                _clientsData.SaveData(new []{new ClientData(chatId, UpdateType.ClientUnsubscribe, message)});
+                
+                return true;
+        }
+
+        if (message.Contains("/error"))
+        {
+            _clientsData.SaveData(new []{new ClientData(chatId, UpdateType.ClientEncounteredError, message)});
+                
+            return true;
+        }
+
+        return false;
     }
 }

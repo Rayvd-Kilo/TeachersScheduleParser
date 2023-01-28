@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 
 using DataReaders.Readers.Interfaces;
@@ -8,10 +9,18 @@ using Newtonsoft.Json;
 using TeachersScheduleParser.Runtime.Interfaces;
 using TeachersScheduleParser.Runtime.Structs;
 
-namespace TeachersScheduleParser.Runtime.Services;
+namespace TeachersScheduleParser.Runtime.Models;
 
-public class SchedulesDataService : IDataContainerService<Schedule[]>
+public class SchedulesDataModel : IDataContainerModel<Schedule[]>, IReactiveValue<Schedule[]>
 {
+    private event Action<Schedule[]>? ValueChanged;
+
+    event Action<Schedule[]>? IReactiveValue<Schedule[]>.ValueChanged
+    {
+        add => ValueChanged += value;
+        remove => ValueChanged -= value;
+    }
+
     private readonly string _schedulesDataPath = FilePathGetter.GetPath("SchedulesData.json");
 
     private readonly IDataReader<Schedule[]> _dataReader;
@@ -20,26 +29,28 @@ public class SchedulesDataService : IDataContainerService<Schedule[]>
     
     private Schedule[]? _schedules;
 
-    public SchedulesDataService(
+    public SchedulesDataModel(
         IDataReader<Schedule[]> dataReader,
         IFileReader<Schedule[]> fileReader)
     {
         _dataReader = dataReader;
         _fileReader = fileReader;
 
-        _schedules = GetData();
+        _schedules = ((IDataGetter<Schedule[]>) this).GetData();
     }
 
-    public void SaveData(Schedule[] schedules)
+    void IDataSaver<Schedule[]>.SaveData(Schedule[] schedules)
     {
         _schedules = schedules;
+        
+        ValueChanged!.Invoke(_schedules);
 
         var jSonData = JsonConvert.SerializeObject(_schedules);
         
         File.WriteAllText(_schedulesDataPath, jSonData);
     }
 
-    public Schedule[]? GetData()
+    Schedule[]? IDataGetter<Schedule[]>.GetData()
     {
         if (_schedules?.Length > 0) return _schedules;
 

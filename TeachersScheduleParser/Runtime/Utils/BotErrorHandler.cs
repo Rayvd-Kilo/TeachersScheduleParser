@@ -11,7 +11,7 @@ namespace TeachersScheduleParser.Runtime.Utils;
 
 public class BotErrorHandler : IAsyncResultHandler<Exception>
 {
-    public Task HandleResultAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+    Task IAsyncResultHandler<Exception>.HandleResultAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
         var errorMessage = exception switch
         {

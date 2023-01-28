@@ -13,7 +13,7 @@ namespace TeachersScheduleParser.Runtime.Factories
             _factory = factory;
         }
 
-        public T Create(D data)
+        T IFileReaderDataFactory<T, D>.Create(D data)
         {
             var value = data;
             

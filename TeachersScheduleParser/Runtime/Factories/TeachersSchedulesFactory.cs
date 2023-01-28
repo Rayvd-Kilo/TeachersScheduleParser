@@ -25,8 +25,8 @@ namespace TeachersScheduleParser.Runtime.Factories
             _dataSetFactory = dataSetFactory;
             _datesFactory = datesFactory;
         }
-        
-        public Schedule[] Create(string data)
+
+        Schedule[] IFileReaderDataFactory<Schedule[], string>.Create(string data)
         {
             var scheduleList = new List<Schedule>();
 
