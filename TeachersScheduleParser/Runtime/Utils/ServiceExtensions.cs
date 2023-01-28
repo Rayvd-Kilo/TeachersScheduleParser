@@ -10,10 +10,13 @@ using DataReaders.ValueTypes;
 
 using Microsoft.Extensions.DependencyInjection;
 
+using TeachersScheduleParser.Runtime.Controllers;
 using TeachersScheduleParser.Runtime.Factories;
 using TeachersScheduleParser.Runtime.Interfaces;
-using TeachersScheduleParser.Runtime.Services;
+using TeachersScheduleParser.Runtime.Models;
 using TeachersScheduleParser.Runtime.Structs;
+
+using Telegram.Bot.Types;
 
 namespace TeachersScheduleParser.Runtime.Utils
 {
@@ -55,11 +58,30 @@ namespace TeachersScheduleParser.Runtime.Utils
 
         public static void AddSchedulesReaderService(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton<IDataReader<Schedule[]>, JsonReader<Schedule[]>>();
+            var jsonReader = new JsonReader<Schedule[]>();
 
-            serviceCollection.AddSingleton<IFileReader<Schedule[]>, FileStreamDataReader<Schedule[]>>();
+            var fileStreamDataReader = new FileStreamDataReader<Schedule[]>();
+            
+            var schedulesDataModelInstance = new SchedulesDataModel(jsonReader, fileStreamDataReader);
 
-            serviceCollection.AddSingleton<IDataContainerService<Schedule[]>, SchedulesDataService>();
+            serviceCollection.AddSingleton<IReactiveValue<Schedule[]>>(schedulesDataModelInstance);
+
+            serviceCollection.AddSingleton<IDataContainerModel<Schedule[]>>(schedulesDataModelInstance);
+        }
+
+        public static void AddTelegramBotSystem(this IServiceCollection serviceCollection)
+        {
+            var clientDataModelInstance = new ClientDataModel();
+            
+            serviceCollection.AddSingleton<IReactiveValue<ClientData>>(clientDataModelInstance);
+
+            serviceCollection.AddSingleton<IDataContainerModel<ClientData[]>>(clientDataModelInstance);
+
+            serviceCollection.AddTransient<IAsyncResultHandler<Exception>, BotErrorHandler>();
+
+            serviceCollection.AddTransient<IAsyncResultHandler<Update>, BotUpdateHandler>();
+            
+            serviceCollection.AddSingleton<IInitializable, TelegramBotController>();
         }
     }
 }

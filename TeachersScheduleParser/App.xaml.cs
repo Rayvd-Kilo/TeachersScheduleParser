@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Windows;
 
 using TeachersScheduleParser.Runtime.Utils;
@@ -37,13 +36,12 @@ namespace TeachersScheduleParser
 
             var entryPointForm = AppHost.Services.GetRequiredService<MainWindow>();
 
-            var telegramBotController = AppHost.Services.GetRequiredService<TelegramBotController>();
+            var initializables = AppHost.Services.GetServices<IInitializable>();
 
-            var schedulesReader = AppHost.Services.GetRequiredService<IDataContainerService<Schedule[]>>();
-            
-            telegramBotController.Initialize();
-            
-            telegramBotController.SetSchedules(schedulesReader.GetData() ?? Array.Empty<Schedule>());
+            foreach (var initializable in initializables)
+            {
+                initializable.Initialize();
+            }
 
             entryPointForm.Show();
             
@@ -73,7 +71,7 @@ namespace TeachersScheduleParser
                 
                 services.AddTransient<IFileReaderDataFactory<Schedule[], string>, TeachersSchedulesFactory>();
 
-                services.AddSingleton<TelegramBotController>();
+                services.AddTelegramBotSystem();
             })).Build();
         }
     }
