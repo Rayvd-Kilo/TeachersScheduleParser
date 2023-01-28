@@ -15,9 +15,13 @@ public struct ClientData
     [JsonProperty]
     public readonly UpdateType UpdateType;
 
-    public ClientData(long chatId, UpdateType updateType)
+    [JsonProperty]
+    public readonly string LastMessage;
+
+    public ClientData(long chatId, UpdateType updateType, string lastMessage)
     {
         ChatId = chatId;
         UpdateType = updateType;
+        LastMessage = lastMessage;
     }
 }
