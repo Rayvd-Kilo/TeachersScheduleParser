@@ -4,5 +4,7 @@ public enum UpdateType
 {
     ClientSubscribe = 0,
     DataUpdateRequired = 1,
-    ScheduleRequired = 2
+    ScheduleRequired = 2,
+    ClientUnsubscribe = 3,
+    ClientEncounteredError = 4
 }
