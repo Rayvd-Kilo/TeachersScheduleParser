@@ -2,7 +2,6 @@
 
 using Microsoft.Win32;
 
-using TeachersScheduleParser.Runtime.Controllers;
 using TeachersScheduleParser.Runtime.Interfaces;
 using TeachersScheduleParser.Runtime.Structs;
 
@@ -14,16 +13,14 @@ namespace TeachersScheduleParser
     public partial class MainWindow
     {
         private readonly IFileReaderDataFactory<Schedule[], string> _scheduleFactory;
-        private readonly TelegramBotController _telegramBotController;
-        private readonly IDataContainerService<Schedule[]> _dataContainerService;
+        private readonly IDataContainerModel<Schedule[]> _dataContainerModel;
 
-        public MainWindow(IFileReaderDataFactory<Schedule[], string> scheduleFactory,
-            TelegramBotController telegramBotController,
-            IDataContainerService<Schedule[]> dataContainerService)
+        public MainWindow(
+            IFileReaderDataFactory<Schedule[], string> scheduleFactory,
+            IDataContainerModel<Schedule[]> dataContainerModel)
         {
             _scheduleFactory = scheduleFactory;
-            _telegramBotController = telegramBotController;
-            _dataContainerService = dataContainerService;
+            _dataContainerModel = dataContainerModel;
             InitializeComponent();
         }
 
@@ -43,9 +40,7 @@ namespace TeachersScheduleParser
 
                 var schedules = _scheduleFactory.Create(filePath);
                 
-                _dataContainerService.SaveData(schedules);
-                
-                _telegramBotController.SetSchedules(schedules);
+                _dataContainerModel.SaveData(schedules);
             }
         }
     }
