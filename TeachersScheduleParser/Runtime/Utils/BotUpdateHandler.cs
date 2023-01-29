@@ -46,12 +46,12 @@ public class BotUpdateHandler : IAsyncResultHandler<Update>
 
         if (subscriptionType == SubscriptionType.Unsubscribed)
         {
-            _clientsData.SaveData(new[] {new ClientData(chatId, userName ,subscriptionType , UpdateType.ScheduleRequired, messageText)});
+            _clientsData.SaveData(new[] {new ClientData(chatId, userName, subscriptionType , UpdateType.ScheduleRequired, messageText)});
             
             return Task.CompletedTask;
         }
         
-        _clientsData.SaveData(new[] {new ClientData(chatId, userName ,subscriptionType , UpdateType.ScheduleRequired, messageText)});
+        _clientsData.SaveData(new[] {new ClientData(chatId, userName, subscriptionType , UpdateType.ScheduleRequired, messageText)});
         
         return Task.CompletedTask;
     }
@@ -61,23 +61,43 @@ public class BotUpdateHandler : IAsyncResultHandler<Update>
         switch (message)
         {
             case "/start":
+                if (!ValidateBannedClient(subscriptionType, chatId, username, message)) return true;
+                
                 _clientsData.SaveData(new []{new ClientData(chatId, username, SubscriptionType.Subscribed, UpdateType.None, message)});
 
                 return true;
             case "/update":
+                if (!ValidateBannedClient(subscriptionType, chatId, username, message)) return true;
+                
                 _clientsData.SaveData(new []{new ClientData(chatId, username, subscriptionType, UpdateType.DataUpdateRequired, message)});
             
                 return true;
             case "/stop":
+                if (!ValidateBannedClient(subscriptionType, chatId, username, message)) return true;
+                
                 _clientsData.SaveData(new []{new ClientData(chatId, username, SubscriptionType.Unsubscribed, UpdateType.None, message)});
                 
                 return true;
             case "/error":
+                if (!ValidateBannedClient(subscriptionType, chatId, username, message)) return true;
+                
                 _clientsData.SaveData(new []{new ClientData(chatId, username, subscriptionType, UpdateType.ClientEncounteredError, message)});
                 
                 return true;
         }
 
         return false;
+    }
+
+    private bool ValidateBannedClient(SubscriptionType subscriptionType, long chatId, string username, string message)
+    {
+        if (subscriptionType == SubscriptionType.Banned)
+        {
+            _clientsData.SaveData(new []{new ClientData(chatId, username, subscriptionType, UpdateType.None, message)});
+
+            return false;
+        }
+
+        return true;
     }
 }

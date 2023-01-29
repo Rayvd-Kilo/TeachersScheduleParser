@@ -91,7 +91,7 @@ public class TelegramBotController : IInitializable, IDisposable
         _schedules = _schedulesContainerModel.GetData() ?? Array.Empty<Schedule>();
         
         _reactiveValue.ValueChanged += UpdateSchedules;
-        _reactiveClientData.ValueChangedAsync += HandleClientDataUpdate;
+        _reactiveClientData.ValueChangedAsync += HandleClientDataUpdateAsync;
     }
 
     void IDisposable.Dispose()
@@ -99,10 +99,10 @@ public class TelegramBotController : IInitializable, IDisposable
         _cancellationTokenSource.Dispose();
 
         _reactiveValue.ValueChanged -= UpdateSchedules;
-        _reactiveClientData.ValueChangedAsync -= HandleClientDataUpdate;
+        _reactiveClientData.ValueChangedAsync -= HandleClientDataUpdateAsync;
     }
     
-    private async Task InitializeKeyboard(long chatId, string message)
+    private async Task InitializeKeyboardAsync(long chatId, string message)
     {
         if (_schedules.Length == 0)
         {
@@ -129,7 +129,7 @@ public class TelegramBotController : IInitializable, IDisposable
             replyMarkup: keyboardMarkup);
     }
     
-    private async Task HandleClientDataUpdate(ClientData clientData)
+    private async Task HandleClientDataUpdateAsync(ClientData clientData)
     {
         switch (clientData.UpdateType)
         {
@@ -138,15 +138,18 @@ public class TelegramBotController : IInitializable, IDisposable
                 
                 if (!validatedValue) return;
                 
-                await InitializeKeyboard(clientData.ChatId, _configurationData.StartupMessage);
+                await InitializeKeyboardAsync(clientData.ChatId, _configurationData.StartupMessage);
                 
                 break;
             case Enums.UpdateType.DataUpdateRequired:
-                validatedValue = await ValidateSubscriptionAsync(clientData, string.Empty);
+                if (clientData.SubscriptionType != SubscriptionType.Banned)
+                {
+                    validatedValue = await ValidateSubscriptionAsync(clientData, string.Empty);
                 
-                if (!validatedValue) return;
+                    if (!validatedValue) return;
+                }
 
-                await InitializeKeyboard(clientData.ChatId, _configurationData.DataUpdateMessage);
+                await InitializeKeyboardAsync(clientData.ChatId, _configurationData.DataUpdateMessage);
                 break;
             case Enums.UpdateType.ScheduleRequired:
                 validatedValue = await ValidateSubscriptionAsync(clientData, _configurationData.SubscriptionErrorMessage);
@@ -201,18 +204,21 @@ public class TelegramBotController : IInitializable, IDisposable
 
     private async Task SendWrongInputErrorAsync(ClientData clientData)
     {
-        await InitializeKeyboard(clientData.ChatId, _configurationData.ClientRequestErrorMessage);
+        await InitializeKeyboardAsync(clientData.ChatId, _configurationData.ClientRequestErrorMessage);
     }
 
     private async Task<bool> ValidateSubscriptionAsync(ClientData clientData, string notValidatedMessage)
     {
-        if (clientData.SubscriptionType != SubscriptionType.Subscribed)
+        switch (clientData.SubscriptionType)
         {
-            if (notValidatedMessage.Equals(string.Empty)) return false;
-            
-            await _botClient.SendTextMessageAsync(clientData.ChatId, notValidatedMessage);
-
-            return false;
+            case SubscriptionType.Unsubscribed when notValidatedMessage.Equals(string.Empty):
+                return false;
+            case SubscriptionType.Unsubscribed:
+                await _botClient.SendTextMessageAsync(clientData.ChatId, notValidatedMessage);
+                return false;
+            case SubscriptionType.Banned:
+                await _botClient.SendTextMessageAsync(clientData.ChatId, _configurationData.ClientBannedMessage);
+                return false;
         }
 
         return true;

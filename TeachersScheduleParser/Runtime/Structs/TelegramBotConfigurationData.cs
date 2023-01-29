@@ -21,6 +21,8 @@ public struct TelegramBotConfigurationData
 
     [JsonProperty] public readonly string SubscriptionErrorMessage;
 
+    [JsonProperty] public readonly string ClientBannedMessage;
+
     [JsonProperty] public readonly string ErrorMessage;
 
     public TelegramBotConfigurationData(
@@ -31,15 +33,17 @@ public struct TelegramBotConfigurationData
         string clientRequestErrorMessage, 
         string dataUpdateMessage,
         string subscriptionErrorMessage,
-        string subscriptionCanceledMessage)
+        string subscriptionCanceledMessage, 
+        string clientBannedMessage)
     {
         BotAccessToken = botAccessToken;
         NullDataMessage = nullDataMessage;
         StartupMessage = startupMessage;
         DataUpdateMessage = dataUpdateMessage;
-        SubscriptionErrorMessage = subscriptionErrorMessage;
-        SubscriptionCanceledMessage = subscriptionCanceledMessage;
         ClientRequestErrorMessage = clientRequestErrorMessage;
+        SubscriptionCanceledMessage = subscriptionCanceledMessage;
+        SubscriptionErrorMessage = subscriptionErrorMessage;
+        ClientBannedMessage = clientBannedMessage;
         ErrorMessage = errorMessage;
     }
 }
