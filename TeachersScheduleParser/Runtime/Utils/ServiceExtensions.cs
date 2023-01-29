@@ -73,7 +73,7 @@ namespace TeachersScheduleParser.Runtime.Utils
         {
             var clientDataModelInstance = new ClientDataModel();
             
-            serviceCollection.AddSingleton<IReactiveValue<ClientData>>(clientDataModelInstance);
+            serviceCollection.AddSingleton<IAsyncReactiveValue<ClientData>>(clientDataModelInstance);
 
             serviceCollection.AddSingleton<IDataContainerModel<ClientData[]>>(clientDataModelInstance);
 

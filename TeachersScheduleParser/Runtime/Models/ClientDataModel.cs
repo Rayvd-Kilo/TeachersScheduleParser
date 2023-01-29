@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 using DataReaders.Readers;
 using DataReaders.Readers.Interfaces;
@@ -15,9 +16,9 @@ using TeachersScheduleParser.Runtime.Structs;
 
 namespace TeachersScheduleParser.Runtime.Models;
 
-public class ClientDataModel : IDataContainerModel<ClientData[]>, IReactiveValue<ClientData>
+public class ClientDataModel : IDataContainerModel<ClientData[]>, IAsyncReactiveValue<ClientData>
 { 
-    public event Action<ClientData>? ValueChanged;
+    public event Func<ClientData, Task>? ValueChangedAsync;
     
     private readonly string _chatsIDsPath = FilePathGetter.GetPath("ChatsIDs.json");
     
@@ -47,7 +48,7 @@ public class ClientDataModel : IDataContainerModel<ClientData[]>, IReactiveValue
                 continue;
             }
             
-            ValueChanged?.Invoke(value);
+            ValueChangedAsync?.Invoke(value);
             
             _clientStatusList.Add(value);
         }
@@ -59,7 +60,7 @@ public class ClientDataModel : IDataContainerModel<ClientData[]>, IReactiveValue
 
     ClientData[]? IDataGetter<ClientData[]>.GetData()
     {
-        if (_clientStatusList?.Count > 0) return _clientStatusList.ToArray();
+        if (_clientStatusList.Count > 0) return _clientStatusList.ToArray();
 
         if (!File.Exists(_chatsIDsPath)) return null;
         
@@ -74,6 +75,6 @@ public class ClientDataModel : IDataContainerModel<ClientData[]>, IReactiveValue
 
         _clientStatusList[_clientStatusList.IndexOf(equalData)] = value;
         
-        ValueChanged?.Invoke(value);
+        ValueChangedAsync?.Invoke(value);
     }
 }
