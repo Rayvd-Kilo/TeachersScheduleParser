@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,38 +29,51 @@ public class BotUpdateHandler : IAsyncResultHandler<Update>
 
         var chatId = message.Chat.Id;
 
+        var storedData = _clientsData.GetData()!.FirstOrDefault(x => x.ChatId.Equals(chatId));
+
+        var subscriptionType = storedData.SubscriptionType;
+
+        if (storedData.Equals(default))
+        {
+            subscriptionType = SubscriptionType.Unsubscribed;
+        }
+
         Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
 
-        if (IsCommand(messageText, chatId)) return Task.CompletedTask;
+        if (IsCommand(messageText, chatId, subscriptionType)) return Task.CompletedTask;
+
+        if (subscriptionType == SubscriptionType.Unsubscribed)
+        {
+            _clientsData.SaveData(new[] {new ClientData(chatId, subscriptionType , UpdateType.ScheduleRequired, messageText)});
+            
+            return Task.CompletedTask;
+        }
         
-        _clientsData.SaveData(new[] {new ClientData(chatId, UpdateType.ScheduleRequired, messageText)});
+        _clientsData.SaveData(new[] {new ClientData(chatId, subscriptionType , UpdateType.ScheduleRequired, messageText)});
         
         return Task.CompletedTask;
     }
 
-    private bool IsCommand(string message, long chatId)
+    private bool IsCommand(string message, long chatId, SubscriptionType subscriptionType)
     {
         switch (message)
         {
             case "/start":
-                _clientsData.SaveData(new []{new ClientData(chatId, UpdateType.ClientSubscribe, message)});
+                _clientsData.SaveData(new []{new ClientData(chatId, SubscriptionType.Subscribed, UpdateType.None, message)});
 
                 return true;
             case "/update":
-                _clientsData.SaveData(new []{new ClientData(chatId, UpdateType.DataUpdateRequired, message)});
+                _clientsData.SaveData(new []{new ClientData(chatId, subscriptionType, UpdateType.DataUpdateRequired, message)});
             
                 return true;
             case "/stop":
-                _clientsData.SaveData(new []{new ClientData(chatId, UpdateType.ClientUnsubscribe, message)});
+                _clientsData.SaveData(new []{new ClientData(chatId, SubscriptionType.Unsubscribed, UpdateType.None, message)});
                 
                 return true;
-        }
-
-        if (message.Contains("/error"))
-        {
-            _clientsData.SaveData(new []{new ClientData(chatId, UpdateType.ClientEncounteredError, message)});
+            case "/error":
+                _clientsData.SaveData(new []{new ClientData(chatId, subscriptionType, UpdateType.ClientEncounteredError, message)});
                 
-            return true;
+                return true;
         }
 
         return false;
