@@ -178,7 +178,7 @@ public class TelegramBotController : IInitializable, IDisposable
                 if (clientStatus.UpdateType != Enums.UpdateType.DataUpdateRequired)
                 {
                     _clientsDataContainerModel.SaveData(new []
-                        {new ClientData(clientStatus.ChatId, clientStatus.SubscriptionType,
+                        {new ClientData(clientStatus.ChatId, clientStatus.ProfileName, clientStatus.SubscriptionType,
                             Enums.UpdateType.DataUpdateRequired, clientStatus.LastMessage)});
                 }
             }

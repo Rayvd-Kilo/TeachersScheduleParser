@@ -33,6 +33,8 @@ public class BotUpdateHandler : IAsyncResultHandler<Update>
 
         var subscriptionType = storedData.SubscriptionType;
 
+        var userName = message.From!.Username ?? string.Empty;
+
         if (storedData.Equals(default))
         {
             subscriptionType = SubscriptionType.Unsubscribed;
@@ -40,38 +42,38 @@ public class BotUpdateHandler : IAsyncResultHandler<Update>
 
         Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
 
-        if (IsCommand(messageText, chatId, subscriptionType)) return Task.CompletedTask;
+        if (IsCommand(messageText, chatId, userName, subscriptionType)) return Task.CompletedTask;
 
         if (subscriptionType == SubscriptionType.Unsubscribed)
         {
-            _clientsData.SaveData(new[] {new ClientData(chatId, subscriptionType , UpdateType.ScheduleRequired, messageText)});
+            _clientsData.SaveData(new[] {new ClientData(chatId, userName ,subscriptionType , UpdateType.ScheduleRequired, messageText)});
             
             return Task.CompletedTask;
         }
         
-        _clientsData.SaveData(new[] {new ClientData(chatId, subscriptionType , UpdateType.ScheduleRequired, messageText)});
+        _clientsData.SaveData(new[] {new ClientData(chatId, userName ,subscriptionType , UpdateType.ScheduleRequired, messageText)});
         
         return Task.CompletedTask;
     }
 
-    private bool IsCommand(string message, long chatId, SubscriptionType subscriptionType)
+    private bool IsCommand(string message, long chatId, string username, SubscriptionType subscriptionType)
     {
         switch (message)
         {
             case "/start":
-                _clientsData.SaveData(new []{new ClientData(chatId, SubscriptionType.Subscribed, UpdateType.None, message)});
+                _clientsData.SaveData(new []{new ClientData(chatId, username, SubscriptionType.Subscribed, UpdateType.None, message)});
 
                 return true;
             case "/update":
-                _clientsData.SaveData(new []{new ClientData(chatId, subscriptionType, UpdateType.DataUpdateRequired, message)});
+                _clientsData.SaveData(new []{new ClientData(chatId, username, subscriptionType, UpdateType.DataUpdateRequired, message)});
             
                 return true;
             case "/stop":
-                _clientsData.SaveData(new []{new ClientData(chatId, SubscriptionType.Unsubscribed, UpdateType.None, message)});
+                _clientsData.SaveData(new []{new ClientData(chatId, username, SubscriptionType.Unsubscribed, UpdateType.None, message)});
                 
                 return true;
             case "/error":
-                _clientsData.SaveData(new []{new ClientData(chatId, subscriptionType, UpdateType.ClientEncounteredError, message)});
+                _clientsData.SaveData(new []{new ClientData(chatId, username, subscriptionType, UpdateType.ClientEncounteredError, message)});
                 
                 return true;
         }

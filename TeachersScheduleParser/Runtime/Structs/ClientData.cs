@@ -13,6 +13,9 @@ public struct ClientData
     public readonly long ChatId;
 
     [JsonProperty]
+    public readonly string ProfileName;
+
+    [JsonProperty]
     public readonly SubscriptionType SubscriptionType;
 
     [JsonProperty]
@@ -21,9 +24,10 @@ public struct ClientData
     [JsonProperty]
     public readonly string LastMessage;
 
-    public ClientData(long chatId, SubscriptionType subscriptionType, UpdateType updateType, string lastMessage)
+    public ClientData(long chatId, string profileName, SubscriptionType subscriptionType, UpdateType updateType, string lastMessage)
     {
         ChatId = chatId;
+        ProfileName = profileName;
         SubscriptionType = subscriptionType;
         UpdateType = updateType;
         LastMessage = lastMessage;
