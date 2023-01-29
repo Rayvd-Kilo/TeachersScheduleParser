@@ -2,9 +2,8 @@ namespace TeachersScheduleParser.Runtime.Enums;
 
 public enum UpdateType
 {
-    ClientSubscribe = 0,
+    None = 0,
     DataUpdateRequired = 1,
     ScheduleRequired = 2,
-    ClientUnsubscribe = 3,
-    ClientEncounteredError = 4
+    ClientEncounteredError = 3
 }
