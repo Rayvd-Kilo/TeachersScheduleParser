@@ -6,7 +6,6 @@ using TeachersScheduleParser.Runtime.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-using TeachersScheduleParser.Runtime.Controllers;
 using TeachersScheduleParser.Runtime.Factories;
 using TeachersScheduleParser.Runtime.Interfaces;
 using TeachersScheduleParser.Runtime.Services;
@@ -36,11 +35,11 @@ namespace TeachersScheduleParser
 
             var entryPointForm = AppHost.Services.GetRequiredService<MainWindow>();
 
-            var initializables = AppHost.Services.GetServices<IInitializable>();
+            var startables = AppHost.Services.GetServices<IAsyncStartable>();
 
-            foreach (var initializable in initializables)
+            foreach (var startable in startables)
             {
-                initializable.Initialize();
+                await startable.StartAsync(_cancellationTokenSource.Token);
             }
 
             entryPointForm.Show();

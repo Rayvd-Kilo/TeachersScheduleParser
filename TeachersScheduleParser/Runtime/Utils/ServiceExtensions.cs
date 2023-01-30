@@ -81,7 +81,7 @@ namespace TeachersScheduleParser.Runtime.Utils
 
             serviceCollection.AddTransient<IAsyncResultHandler<Update>, BotUpdateHandler>();
             
-            serviceCollection.AddSingleton<IInitializable, TelegramBotController>();
+            serviceCollection.AddSingleton<IAsyncStartable, TelegramBotController>();
         }
     }
 }
