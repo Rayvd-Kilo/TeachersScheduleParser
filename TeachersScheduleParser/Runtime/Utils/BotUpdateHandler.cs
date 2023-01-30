@@ -33,7 +33,7 @@ public class BotUpdateHandler : IAsyncResultHandler<Update>
 
         var subscriptionType = storedData.SubscriptionType;
 
-        var userName = message.From!.Username ?? string.Empty;
+        var userName = message.From!.Username ?? message.From.FirstName + " " + message.From.LastName;
 
         if (storedData.Equals(default))
         {
