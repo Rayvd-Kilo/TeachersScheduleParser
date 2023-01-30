@@ -5,9 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using DataReaders.Readers;
-using DataReaders.Readers.Interfaces;
 using DataReaders.Readers.JSONReaders;
 using DataReaders.Utils;
+
+using Newtonsoft.Json;
 
 using TeachersScheduleParser.Runtime.Enums;
 using TeachersScheduleParser.Runtime.Interfaces;
@@ -18,13 +19,16 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
+using File = System.IO.File;
 using UpdateType = Telegram.Bot.Types.Enums.UpdateType;
 
 namespace TeachersScheduleParser.Runtime.Controllers;
 
-public class TelegramBotController : IInitializable, IDisposable
+public class TelegramBotController : IAsyncStartable, IDisposable
 {
     private readonly string _configurationPath = FilePathGetter.GetPath("BotConfiguration.json");
+    
+    private readonly string _versionDataPath = FilePathGetter.GetPath("BotVersionData.json");
     
     private readonly IDataContainerModel<Schedule[]> _schedulesContainerModel;
     
@@ -37,12 +41,14 @@ public class TelegramBotController : IInitializable, IDisposable
     private readonly IAsyncResultHandler<Exception> _errorHandler;
     
     private readonly IAsyncResultHandler<Update> _updateHandler;
-    
+
     private readonly ITelegramBotClient _botClient;
 
     private readonly CancellationTokenSource _cancellationTokenSource;
     
     private readonly TelegramBotConfigurationData _configurationData;
+    
+    private readonly VersionData _versionData;
     
     private Schedule[] _schedules = null!;
 
@@ -66,18 +72,17 @@ public class TelegramBotController : IInitializable, IDisposable
         
         _updateHandler = updateHandler;
 
-        IDataReader<TelegramBotConfigurationData> dataReader = new JsonReader<TelegramBotConfigurationData>();
-
-        IFileReader<TelegramBotConfigurationData> fileReader = new FileStreamDataReader<TelegramBotConfigurationData>();
-        
         _cancellationTokenSource = new CancellationTokenSource();
 
-        _configurationData = dataReader.ReadData(fileReader, _configurationPath);
+        _configurationData = new JsonReader<TelegramBotConfigurationData>().
+            ReadData(new FileStreamDataReader<TelegramBotConfigurationData>(), _configurationPath);
+        
+        _versionData = new JsonReader<VersionData>().ReadData(new FileStreamDataReader<VersionData>(), _versionDataPath);
 
         _botClient = new TelegramBotClient(_configurationData.BotAccessToken);
     }
 
-    void IInitializable.Initialize()
+    async Task IAsyncStartable.StartAsync(CancellationToken token)
     {
         _botClient.StartReceiving(
             _updateHandler.HandleResultAsync,
@@ -92,6 +97,20 @@ public class TelegramBotController : IInitializable, IDisposable
         
         _reactiveValue.ValueChanged += UpdateSchedules;
         _reactiveClientData.ValueChangedAsync += HandleClientDataUpdateAsync;
+        
+        if (_versionData.IsOutdated)
+        {
+            foreach (var clientData in _clientsDataContainerModel.GetData()!)
+            {
+                await _botClient.SendTextMessageAsync(clientData.ChatId, _versionData.PatchNoteMessage, cancellationToken: token);
+            }
+
+            var newVersionData = new VersionData(_versionData.Version, false, _versionData.PatchNoteMessage);
+
+            var jSonData = JsonConvert.SerializeObject(newVersionData, Formatting.Indented);
+            
+            await File.WriteAllTextAsync(_versionDataPath, jSonData, token);
+        }
     }
 
     void IDisposable.Dispose()
