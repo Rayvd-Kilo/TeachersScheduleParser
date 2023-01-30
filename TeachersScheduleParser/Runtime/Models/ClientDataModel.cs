@@ -53,7 +53,7 @@ public class ClientDataModel : IDataContainerModel<ClientData[]>, IAsyncReactive
             _clientStatusList.Add(value);
         }
 
-        var jSonData = JsonConvert.SerializeObject(_clientStatusList);
+        var jSonData = JsonConvert.SerializeObject(_clientStatusList, Formatting.Indented);
         
         File.WriteAllText(_chatsIDsPath, jSonData);
     }

@@ -45,7 +45,7 @@ public class SchedulesDataModel : IDataContainerModel<Schedule[]>, IReactiveValu
         
         ValueChanged!.Invoke(_schedules);
 
-        var jSonData = JsonConvert.SerializeObject(_schedules);
+        var jSonData = JsonConvert.SerializeObject(_schedules, Formatting.Indented);
         
         File.WriteAllText(_schedulesDataPath, jSonData);
     }
