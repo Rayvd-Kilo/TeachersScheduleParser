@@ -72,6 +72,12 @@ namespace TeachersScheduleParser.Runtime.Utils
         public static void AddTelegramBotSystem(this IServiceCollection serviceCollection)
         {
             var clientDataModelInstance = new ClientDataModel();
+
+            var reportsModel = new ClientsReportsModel();
+
+            serviceCollection.AddSingleton<IDataSaver<ClientData>>(reportsModel);
+
+            serviceCollection.AddSingleton<IDataGetter<ClientReports[]>>(reportsModel);
             
             serviceCollection.AddSingleton<IAsyncReactiveValue<ClientData>>(clientDataModelInstance);
 

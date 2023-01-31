@@ -51,6 +51,13 @@ public class BotUpdateHandler : IAsyncResultHandler<Update>
             return Task.CompletedTask;
         }
         
+        if (storedData.UpdateType.Equals(UpdateType.ClientStartReport))
+        {
+            _clientsData.SaveData(new[] {new ClientData(chatId, userName, subscriptionType, UpdateType.ClientReportEnded, messageText)});
+
+            return Task.CompletedTask;
+        }
+        
         _clientsData.SaveData(new[] {new ClientData(chatId, userName, subscriptionType , UpdateType.ScheduleRequired, messageText)});
         
         return Task.CompletedTask;
@@ -78,10 +85,10 @@ public class BotUpdateHandler : IAsyncResultHandler<Update>
                 _clientsData.SaveData(new []{new ClientData(chatId, username, SubscriptionType.Unsubscribed, UpdateType.None, message)});
                 
                 return true;
-            case "/error":
+            case "/report":
                 if (!ValidateBannedClient(subscriptionType, chatId, username, message)) return true;
                 
-                _clientsData.SaveData(new []{new ClientData(chatId, username, subscriptionType, UpdateType.ClientEncounteredError, message)});
+                _clientsData.SaveData(new []{new ClientData(chatId, username, subscriptionType, UpdateType.ClientStartReport, message)});
                 
                 return true;
         }

@@ -41,6 +41,8 @@ public class TelegramBotController : IAsyncStartable, IDisposable
     private readonly IAsyncResultHandler<Exception> _errorHandler;
     
     private readonly IAsyncResultHandler<Update> _updateHandler;
+    
+    private readonly IDataSaver<ClientData> _reportsSaver;
 
     private readonly ITelegramBotClient _botClient;
 
@@ -58,7 +60,8 @@ public class TelegramBotController : IAsyncStartable, IDisposable
         IDataContainerModel<ClientData[]> clientsDataContainerModel,
         IAsyncReactiveValue<ClientData> reactiveClientData,
         IAsyncResultHandler<Exception> errorHandler,
-        IAsyncResultHandler<Update> updateHandler)
+        IAsyncResultHandler<Update> updateHandler,
+        IDataSaver<ClientData> reportsSaver)
     {
         _schedulesContainerModel = schedulesContainerModel;
         
@@ -71,6 +74,8 @@ public class TelegramBotController : IAsyncStartable, IDisposable
         _errorHandler = errorHandler;
         
         _updateHandler = updateHandler;
+        
+        _reportsSaver = reportsSaver;
 
         _cancellationTokenSource = new CancellationTokenSource();
 
@@ -153,6 +158,7 @@ public class TelegramBotController : IAsyncStartable, IDisposable
         switch (clientData.UpdateType)
         {
             case Enums.UpdateType.None:
+                
                 var validatedValue = await ValidateSubscriptionAsync(clientData, _configurationData.SubscriptionCanceledMessage);
                 
                 if (!validatedValue) return;
@@ -160,7 +166,9 @@ public class TelegramBotController : IAsyncStartable, IDisposable
                 await InitializeKeyboardAsync(clientData.ChatId, _configurationData.StartupMessage);
                 
                 break;
+            
             case Enums.UpdateType.DataUpdateRequired:
+                
                 if (clientData.SubscriptionType != SubscriptionType.Banned)
                 {
                     validatedValue = await ValidateSubscriptionAsync(clientData, string.Empty);
@@ -170,19 +178,53 @@ public class TelegramBotController : IAsyncStartable, IDisposable
 
                 await InitializeKeyboardAsync(clientData.ChatId, _configurationData.DataUpdateMessage);
                 break;
+            
             case Enums.UpdateType.ScheduleRequired:
+                
                 validatedValue = await ValidateSubscriptionAsync(clientData, _configurationData.SubscriptionErrorMessage);
                 
                 if (!validatedValue) return;
                 
                 await SendScheduleAsync(clientData);
+                
                 break;
+            
+            case Enums.UpdateType.ClientStartReport:
+                
+                if (clientData.SubscriptionType != SubscriptionType.Banned)
+                {
+                    validatedValue = await ValidateSubscriptionAsync(clientData, string.Empty);
+                
+                    if (!validatedValue) return;
+                }
+
+                await _botClient.SendTextMessageAsync(clientData.ChatId, _configurationData.ReportStartMessage);
+                
+                break;
+
+            case Enums.UpdateType.ClientReportEnded:
+                
+                if (clientData.SubscriptionType != SubscriptionType.Banned)
+                {
+                    validatedValue = await ValidateSubscriptionAsync(clientData, string.Empty);
+                
+                    if (!validatedValue) return;
+                }
+                
+                _reportsSaver.SaveData(clientData);
+
+                await InitializeKeyboardAsync(clientData.ChatId, _configurationData.ReportEndMessage);
+                
+                break;
+            
             default:
+                
                 validatedValue = await ValidateSubscriptionAsync(clientData, _configurationData.SubscriptionErrorMessage);
                 
                 if (!validatedValue) return;
                 
                 await SendWrongInputErrorAsync(clientData);
+                
                 break;
         }
     }
