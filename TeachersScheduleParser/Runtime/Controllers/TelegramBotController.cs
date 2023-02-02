@@ -126,7 +126,7 @@ public class TelegramBotController : IAsyncStartable, IDisposable
         _reactiveClientData.ValueChangedAsync -= HandleClientDataUpdateAsync;
     }
     
-    private async Task InitializeKeyboardAsync(long chatId, string message)
+    private async Task InitializeKeyboardAsync(long chatId, PersonType targetType, string message)
     {
         if (_schedules.Length == 0)
         {
@@ -135,10 +135,26 @@ public class TelegramBotController : IAsyncStartable, IDisposable
         
         var rows = new List<KeyboardButton[]>();
         var cols = new List<KeyboardButton>();
-        
-        for (var index = 1; index < _schedules.Length; index++)
+
+        if (targetType.Equals(PersonType.None))
         {
-            cols.Add(new KeyboardButton(_schedules[index - 1].TeacherData.FullName));
+            foreach (var registrationChoice in _configurationData.RegistrationChoices)
+            {
+                cols.Add(new KeyboardButton(registrationChoice.Value));
+            }
+
+            var markup = new ReplyKeyboardMarkup(cols.ToArray());
+
+            await _botClient.SendTextMessageAsync(chatId, message, replyMarkup: markup);
+            
+            return;
+        }
+
+        var filteredData = _schedules.Where(x => x.PersonData.PersonType.Equals(targetType)).ToArray();
+        
+        for (var index = 1; index < filteredData.Length; index++)
+        {
+            cols.Add(new KeyboardButton(filteredData[index - 1].PersonData.FullName));
             
             if (index % 3 != 0) continue;
             
@@ -163,7 +179,7 @@ public class TelegramBotController : IAsyncStartable, IDisposable
                 
                 if (!validatedValue) return;
                 
-                await InitializeKeyboardAsync(clientData.ChatId, _configurationData.StartupMessage);
+                await InitializeKeyboardAsync(clientData.ChatId, clientData.RequirePersonType, _configurationData.StartupMessage);
                 
                 break;
             
@@ -176,7 +192,26 @@ public class TelegramBotController : IAsyncStartable, IDisposable
                     if (!validatedValue) return;
                 }
 
-                await InitializeKeyboardAsync(clientData.ChatId, _configurationData.DataUpdateMessage);
+                if (clientData.RequirePersonType.Equals(PersonType.None))
+                {
+                    if (_configurationData.RegistrationChoices.Any(x => x.Value.Equals(clientData.LastMessage)))
+                    {
+                        var targetPersonType = _configurationData.RegistrationChoices
+                            .First(x => x.Value.Equals(clientData.LastMessage)).Markup;
+                        
+                        _clientsDataContainerModel.SaveData(new [] {new ClientData(clientData.ChatId, clientData.ProfileName, 
+                            clientData.SubscriptionType, targetPersonType, clientData.UpdateType, clientData.LastMessage)});
+                        
+                        break;
+                    }
+                    
+                    await SendWrongInputErrorAsync(clientData);
+                
+                    break;
+                }
+
+                await InitializeKeyboardAsync(clientData.ChatId, clientData.RequirePersonType, _configurationData.DataUpdateMessage);
+                
                 break;
             
             case Enums.UpdateType.ScheduleRequired:
@@ -213,7 +248,7 @@ public class TelegramBotController : IAsyncStartable, IDisposable
                 
                 _reportsSaver.SaveData(clientData);
 
-                await InitializeKeyboardAsync(clientData.ChatId, _configurationData.ReportEndMessage);
+                await InitializeKeyboardAsync(clientData.ChatId, clientData.RequirePersonType, _configurationData.ReportEndMessage);
                 
                 break;
             
@@ -242,8 +277,8 @@ public class TelegramBotController : IAsyncStartable, IDisposable
                 if (clientStatus.UpdateType != Enums.UpdateType.DataUpdateRequired)
                 {
                     _clientsDataContainerModel.SaveData(new []
-                        {new ClientData(clientStatus.ChatId, clientStatus.ProfileName, clientStatus.SubscriptionType,
-                            Enums.UpdateType.DataUpdateRequired, clientStatus.LastMessage)});
+                        {new ClientData(clientStatus.ChatId, clientStatus.ProfileName, clientStatus.SubscriptionType, 
+                            clientStatus.RequirePersonType, Enums.UpdateType.DataUpdateRequired, clientStatus.LastMessage)});
                 }
             }
         }
@@ -251,7 +286,7 @@ public class TelegramBotController : IAsyncStartable, IDisposable
 
     private async Task SendScheduleAsync(ClientData clientData)
     {
-        if (!_schedules.Any(x => x.TeacherData.FullName.Equals(clientData.LastMessage)))
+        if (!_schedules.Any(x => x.PersonData.FullName.Equals(clientData.LastMessage)))
         {
             await SendWrongInputErrorAsync(clientData);
             
@@ -259,13 +294,13 @@ public class TelegramBotController : IAsyncStartable, IDisposable
         }
         
         await _botClient.SendTextMessageAsync(clientData.ChatId, _schedules.First
-            (x => x.TeacherData.FullName.Contains(clientData.LastMessage)).ToString(),
+            (x => x.PersonData.FullName.Contains(clientData.LastMessage)).ToString(),
             cancellationToken: _cancellationTokenSource.Token);
     }
 
     private async Task SendWrongInputErrorAsync(ClientData clientData)
     {
-        await InitializeKeyboardAsync(clientData.ChatId, _configurationData.ClientRequestErrorMessage);
+        await InitializeKeyboardAsync(clientData.ChatId, clientData.RequirePersonType, _configurationData.ClientRequestErrorMessage);
     }
 
     private async Task<bool> ValidateSubscriptionAsync(ClientData clientData, string notValidatedMessage)

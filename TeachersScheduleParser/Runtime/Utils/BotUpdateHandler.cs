@@ -33,62 +33,81 @@ public class BotUpdateHandler : IAsyncResultHandler<Update>
 
         var subscriptionType = storedData.SubscriptionType;
 
+        var targetPersonType = storedData.RequirePersonType;
+
         var userName = message.From!.Username ?? message.From.FirstName + " " + message.From.LastName;
 
         if (storedData.Equals(default))
         {
             subscriptionType = SubscriptionType.Unsubscribed;
+            
+            targetPersonType = PersonType.None;
         }
 
         Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
 
-        if (IsCommand(messageText, chatId, userName, subscriptionType)) return Task.CompletedTask;
+        if (IsCommand(messageText, chatId, userName, subscriptionType, targetPersonType)) return Task.CompletedTask;
 
         if (subscriptionType == SubscriptionType.Unsubscribed)
         {
-            _clientsData.SaveData(new[] {new ClientData(chatId, userName, subscriptionType , UpdateType.ScheduleRequired, messageText)});
+            _clientsData.SaveData(new[] {new ClientData(chatId, userName, subscriptionType,
+                targetPersonType, UpdateType.ScheduleRequired, messageText)});
             
             return Task.CompletedTask;
         }
         
         if (storedData.UpdateType.Equals(UpdateType.ClientStartReport))
         {
-            _clientsData.SaveData(new[] {new ClientData(chatId, userName, subscriptionType, UpdateType.ClientReportEnded, messageText)});
+            _clientsData.SaveData(new[] {new ClientData(chatId, userName, subscriptionType,
+                targetPersonType, UpdateType.ClientReportEnded, messageText)});
 
             return Task.CompletedTask;
         }
+
+        if (targetPersonType == PersonType.None)
+        {
+            _clientsData.SaveData(new[] {new ClientData(chatId, userName, subscriptionType,
+                targetPersonType, UpdateType.DataUpdateRequired, messageText)});
+            
+            return Task.CompletedTask;
+        }
         
-        _clientsData.SaveData(new[] {new ClientData(chatId, userName, subscriptionType , UpdateType.ScheduleRequired, messageText)});
+        _clientsData.SaveData(new[] {new ClientData(chatId, userName, subscriptionType,
+            targetPersonType, UpdateType.ScheduleRequired, messageText)});
         
         return Task.CompletedTask;
     }
 
-    private bool IsCommand(string message, long chatId, string username, SubscriptionType subscriptionType)
+    private bool IsCommand(string message, long chatId, string username, SubscriptionType subscriptionType, PersonType personType)
     {
         switch (message)
         {
             case "/start":
                 if (!ValidateBannedClient(subscriptionType, chatId, username, message)) return true;
                 
-                _clientsData.SaveData(new []{new ClientData(chatId, username, SubscriptionType.Subscribed, UpdateType.None, message)});
+                _clientsData.SaveData(new []{new ClientData(chatId, username,
+                    SubscriptionType.Subscribed, PersonType.None, UpdateType.None, message)});
 
                 return true;
             case "/update":
                 if (!ValidateBannedClient(subscriptionType, chatId, username, message)) return true;
                 
-                _clientsData.SaveData(new []{new ClientData(chatId, username, subscriptionType, UpdateType.DataUpdateRequired, message)});
+                _clientsData.SaveData(new []{new ClientData(chatId, username,
+                    subscriptionType, personType, UpdateType.DataUpdateRequired, message)});
             
                 return true;
             case "/stop":
                 if (!ValidateBannedClient(subscriptionType, chatId, username, message)) return true;
                 
-                _clientsData.SaveData(new []{new ClientData(chatId, username, SubscriptionType.Unsubscribed, UpdateType.None, message)});
+                _clientsData.SaveData(new []{new ClientData(chatId, username,
+                    SubscriptionType.Unsubscribed, personType, UpdateType.None, message)});
                 
                 return true;
             case "/report":
                 if (!ValidateBannedClient(subscriptionType, chatId, username, message)) return true;
                 
-                _clientsData.SaveData(new []{new ClientData(chatId, username, subscriptionType, UpdateType.ClientStartReport, message)});
+                _clientsData.SaveData(new []{new ClientData(chatId, username,
+                    subscriptionType, personType, UpdateType.ClientStartReport, message)});
                 
                 return true;
         }
@@ -100,7 +119,8 @@ public class BotUpdateHandler : IAsyncResultHandler<Update>
     {
         if (subscriptionType == SubscriptionType.Banned)
         {
-            _clientsData.SaveData(new []{new ClientData(chatId, username, subscriptionType, UpdateType.None, message)});
+            _clientsData.SaveData(new []{new ClientData(chatId, username,
+                subscriptionType, PersonType.None, UpdateType.None, message)});
 
             return false;
         }
