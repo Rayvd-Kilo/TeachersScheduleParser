@@ -6,13 +6,13 @@ namespace TeachersScheduleParser.Runtime.Structs
     [Serializable]
     public struct Schedule
     {
-        public PersonData TeacherData { get; }
+        public PersonData PersonData { get; }
 
         public DailySchedule[] DailySchedules { get; }
 
-        public Schedule(PersonData teacherData, DailySchedule[] dailySchedules)
+        public Schedule(PersonData personData, DailySchedule[] dailySchedules)
         {
-            TeacherData = teacherData;
+            PersonData = personData;
 
             DailySchedules = dailySchedules;
         }
@@ -21,7 +21,7 @@ namespace TeachersScheduleParser.Runtime.Structs
         {
             var stringBuilder = new StringBuilder();
 
-            stringBuilder.AppendLine(TeacherData.FullName);
+            stringBuilder.AppendLine(PersonData.FullName);
 
             foreach (var dailySchedule in DailySchedules)
             {

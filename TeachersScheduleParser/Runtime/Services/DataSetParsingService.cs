@@ -6,23 +6,24 @@ using DataReaders.Readers.DataSetReader;
 using DataReaders.Readers.RegexReaders;
 using DataReaders.ValueTypes;
 
+using TeachersScheduleParser.Runtime.Enums;
 using TeachersScheduleParser.Runtime.Structs;
 
 namespace TeachersScheduleParser.Runtime.Services
 {
     public class DataSetParsingService
     {
-        public PersonData[] GetPersons(DataSet fileDataSet)
+        public PersonData[] GetPersons(DataSet fileDataSet, string regexPattern, PersonType personType)
         {
             var fullNamesList = new List<PersonData>();
 
-            FullNameRegexTableReader fullNameReader = new FullNameRegexTableReader(new TableReader<string>());
+            UniqStringsRegexTableReader fullNameReader = new UniqStringsRegexTableReader(new TableReader<string>(), regexPattern);
 
             var fullNames = fullNameReader.ReadData(fileDataSet.Tables[0]);
 
             foreach (var fullName in fullNames)
             {
-                fullNamesList.Add(new PersonData(fullName));
+                fullNamesList.Add(new PersonData(fullName, personType));
             }
 
             return fullNamesList.ToArray();
