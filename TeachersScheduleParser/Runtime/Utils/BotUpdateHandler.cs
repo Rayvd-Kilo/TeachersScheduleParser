@@ -29,7 +29,7 @@ public class BotUpdateHandler : IAsyncResultHandler<Update>
 
         var chatId = message.Chat.Id;
 
-        var storedData = _clientsData.GetData()!.FirstOrDefault(x => x.ChatId.Equals(chatId));
+        var storedData = (_clientsData.GetData() ?? Array.Empty<ClientData>()).FirstOrDefault(x => x.ChatId.Equals(chatId));
 
         var subscriptionType = storedData.SubscriptionType;
 
