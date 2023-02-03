@@ -45,6 +45,11 @@ namespace TeachersScheduleParser.Runtime.Creators
 
                         var subject = _subjectCreator.CreateSubject(dataRow, isDaily);
 
+                        if (subject.SubjectName.Equals(string.Empty))
+                        {
+                            continue;
+                        }
+
                         if (subjects.Any(x =>
                                 x.SubjectName.Equals(subject.SubjectName) && x.SubjectTime.Equals(subject.SubjectTime)))
                         {
