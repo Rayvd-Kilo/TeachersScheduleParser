@@ -3,6 +3,8 @@ using System.Text;
 
 using Newtonsoft.Json;
 
+using TeachersScheduleParser.Runtime.Enums;
+
 namespace TeachersScheduleParser.Runtime.Structs
 {
     [Serializable]
@@ -20,7 +22,7 @@ namespace TeachersScheduleParser.Runtime.Structs
             Subjects = subjects;
         }
 
-        public override string ToString()
+        public string ToString(PersonType personType)
         {
             var stringBuilder = new StringBuilder();
 
@@ -28,7 +30,7 @@ namespace TeachersScheduleParser.Runtime.Structs
 
             foreach (var subject in Subjects)
             {
-                stringBuilder.AppendLine(subject.ToString());
+                stringBuilder.AppendLine(subject.ToString(personType));
             }
 
             return stringBuilder.ToString();
