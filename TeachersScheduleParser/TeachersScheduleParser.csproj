@@ -23,4 +23,9 @@
       <PackageReference Include="Telegram.Bot" Version="19.0.0-preview.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="MVVM\View" />
+      <Folder Include="MVVM\ViewModel" />
+    </ItemGroup>
+
 </Project>
