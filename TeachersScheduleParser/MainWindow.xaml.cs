@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Input;
 
 using Microsoft.Win32;
 
@@ -41,6 +42,14 @@ namespace TeachersScheduleParser
                 var schedules = _scheduleFactory.Create(filePath);
                 
                 _dataContainerModel.SaveData(schedules);
+            }
+        }
+        
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                DragMove();
             }
         }
     }

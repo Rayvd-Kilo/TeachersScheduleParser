@@ -3,24 +3,68 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TeachersScheduleParser"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        
-        <Grid Grid.Column="0">
-            <TextBlock Background="Bisque" Margin="10"/>
-        </Grid>
-        
-        <Grid Grid.Column="1">
-            <StackPanel Orientation="Vertical">
-                <Button Content="Нажми на кнопку" Margin="10" Name="FileOpenerButton" Click="FileOpenerButton_OnClick"/>
+        Title="MainWindow" Height="600" Width="920"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="Transparent"
+        AllowsTransparency="True"
+        MouseDown="Window_MouseDown">
+    <Border Background="#372837" CornerRadius="15">
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="75" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Bot Client"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       Foreground="White"
+                       FontSize="22"
+                       Margin="20,0,0,0">
+            </TextBlock>
+            
+            <StackPanel Grid.Row="1" Grid.Column="0">
+                <RadioButton Content="Client List"
+                             Height="50"
+                             Foreground="White"
+                             FontSize="14"
+                             Style="{StaticResource MenuButtonTheme}"/>
+                <RadioButton Content="Reports"
+                             Height="50"
+                             Foreground="White"
+                             FontSize="14"
+                             Style="{StaticResource MenuButtonTheme}"/>
+                <RadioButton Content="Update schedules"
+                             Height="50"
+                             Foreground="White"
+                             FontSize="14"
+                             Click="FileOpenerButton_OnClick"
+                             Style="{StaticResource MenuButtonTheme}"/>
             </StackPanel>
+            
+            <StackPanel Grid.Row="0" Grid.Column="1"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Margin="0,10,20,0">
+                <Button Content="X"
+                        FontSize="20"/>
+                
+            </StackPanel>
+            
+            <ContentControl Grid.Row="1" Grid.Column="1" Margin="10">
+                
+            </ContentControl>
+
         </Grid>
-        
-    </Grid>
+    </Border>
+
 </Window>
