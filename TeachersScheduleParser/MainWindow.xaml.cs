@@ -52,5 +52,15 @@ namespace TeachersScheduleParser
                 DragMove();
             }
         }
+
+        private void ApplicationCloseButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void ApplicationHideButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
     }
 }
