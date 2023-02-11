@@ -12,13 +12,14 @@
                               Background="{TemplateBinding Background}">
 
                             <TextBlock Text="{TemplateBinding Content}"
+                                       HorizontalAlignment="Center"
                                        VerticalAlignment="Center"/>
 
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-
+            
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
 
@@ -26,7 +27,19 @@
 
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="Red"/>
+                
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="RadioButton">
+                            <Grid>
+                                <TextBlock Text="{TemplateBinding Content}"
+                                           Foreground="Red"/>
+
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                
             </Trigger>
         </Style.Triggers>
     </Style>
