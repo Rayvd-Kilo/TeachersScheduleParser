@@ -39,12 +39,14 @@ namespace TeachersScheduleParser.Runtime.Creators
 
             var subjectName = rowData[2];
 
+            var teacherName = rowData[3];
+
             var subjectCabinet = rowData[4];
 
             var subjectGroup = _regexReader.GetMatch(rowData[0]).Value;
 
             return new Subject(subjectNumber, subjectTime.ConvertToStringTime(), subjectName,
-                subjectName.ConvertToSubject(), subjectCabinet, subjectGroup);
+                subjectName.ConvertToSubject(), subjectCabinet, teacherName, subjectGroup);
         }
 
         private int GetTimeBySubjectNumber(int subjectNumber, bool isDaily)

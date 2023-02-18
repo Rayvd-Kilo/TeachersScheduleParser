@@ -74,7 +74,7 @@ namespace TeachersScheduleParser.Runtime.Creators
             var newGroupText = _regexReader.GetMatch(oldSubject.Group).Value + "," + _regexReader.GetMatch(newGroupValue).Value;
 
             return new Subject(oldSubject.SubjectOrderNumber, oldSubject.SubjectTime, oldSubject.SubjectName,
-                oldSubject.SubjectType, oldSubject.Cabinet, newGroupText);
+                oldSubject.SubjectType, oldSubject.Cabinet, oldSubject.TeacherName, newGroupText);
         }
 
         private bool HasTargetPerson(PersonData personData, string[,] matrix)

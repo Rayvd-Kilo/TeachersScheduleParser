@@ -17,15 +17,19 @@ namespace TeachersScheduleParser.Runtime.Structs
 
         public string Cabinet { get; }
         
+        public string TeacherName { get; }
+        
         public string Group { get; private set; }
 
-        public Subject(int subjectOrderNumber, string subjectTime, string subjectName, SubjectType subjectType, string cabinet, string group)
+        public Subject(int subjectOrderNumber, string subjectTime, string subjectName, SubjectType subjectType,
+            string cabinet, string teacherName, string group)
         {
             SubjectOrderNumber = subjectOrderNumber;
             SubjectTime = subjectTime;
             SubjectName = subjectName;
             SubjectType = subjectType;
             Cabinet = cabinet;
+            TeacherName = teacherName;
             Group = group;
         }
 
@@ -36,7 +40,8 @@ namespace TeachersScheduleParser.Runtime.Structs
                 case PersonType.None:
                     break;
                 case PersonType.Group:
-                    return $"{SubjectOrderNumber}. {SubjectName}; \n" +
+                    return $" {SubjectOrderNumber}. {SubjectName}; \n" +
+                           $" Преподаватель: {TeacherName}; \n" +
                            $" Время начала: {SubjectTime}; \n" +
                            $" Кабинет: {Cabinet};";
                 case PersonType.Teacher:
