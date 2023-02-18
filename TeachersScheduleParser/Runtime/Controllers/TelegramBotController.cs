@@ -252,6 +252,19 @@ public class TelegramBotController : IAsyncStartable, IDisposable
                 
                 break;
             
+            case Enums.UpdateType.TypeChangeRequired:
+                
+                if (clientData.SubscriptionType != SubscriptionType.Banned)
+                {
+                    validatedValue = await ValidateSubscriptionAsync(clientData, string.Empty);
+                
+                    if (!validatedValue) return;
+                }
+                
+                await InitializeKeyboardAsync(clientData.ChatId, clientData.RequirePersonType, _configurationData.DataUpdateMessage);
+                
+                break;
+            
             default:
                 
                 validatedValue = await ValidateSubscriptionAsync(clientData, _configurationData.SubscriptionErrorMessage);
