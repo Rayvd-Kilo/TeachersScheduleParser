@@ -6,5 +6,6 @@ public enum UpdateType
     DataUpdateRequired = 1,
     ScheduleRequired = 2,
     ClientStartReport = 3,
-    ClientReportEnded = 4
+    ClientReportEnded = 4,
+    TypeChangeRequired = 5
 }
