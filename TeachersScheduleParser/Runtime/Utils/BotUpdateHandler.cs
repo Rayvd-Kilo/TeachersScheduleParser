@@ -108,7 +108,15 @@ public class BotUpdateHandler : IAsyncResultHandler<Update>
                 
                 _clientsData.SaveData(new []{new ClientData(chatId, username,
                     subscriptionType, personType, UpdateType.ClientStartReport, message)});
+
+                return true;
+            
+            case "/changelisttype":
+                if (!ValidateBannedClient(subscriptionType, chatId, username, message)) return true;
                 
+                _clientsData.SaveData(new []{new ClientData(chatId, username,
+                    subscriptionType, PersonType.None, UpdateType.TypeChangeRequired, message)});
+
                 return true;
         }
 
