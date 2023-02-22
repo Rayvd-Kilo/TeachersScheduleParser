@@ -1,0 +1,47 @@
+<UserControl x:Class="TeachersScheduleParser.MVVM.View.UsersListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:TeachersScheduleParser.MVVM.View"
+             xmlns:data="clr-namespace:TeachersScheduleParser.MVVM.Objects"
+             mc:Ignorable="d"
+             d:DesignHeight="450" 
+             d:DesignWidth="800"
+             Background="Transparent">
+    
+    <UserControl.DataContext>
+        <data:ClientDataObject/>
+    </UserControl.DataContext>
+    
+    <Grid>
+        <StackPanel>
+            <TextBlock Text="Clients"
+                       Foreground="White"
+                       FontSize="25"
+                       HorizontalAlignment="Left"
+                       Margin="0,0,0,20"/>
+            
+            <Grid>
+                
+                <ListView Margin="10" Name="ClientsDataList">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <WrapPanel>
+                                <TextBlock Text="Name: " />
+                                <TextBlock Text="{Binding ClientName}" FontWeight="Bold" />
+                                <TextBlock Text="| " />
+                                <TextBlock Text="SubscriptionType : " />
+                                <TextBlock Text="{Binding SubscriptionType}" FontWeight="Bold" />
+                                <TextBlock Text="| " />
+                                <TextBlock Text="Require Person Type : " />
+                                <TextBlock Text="{Binding RequirePersonType}" FontWeight="Bold" />
+                            </WrapPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>

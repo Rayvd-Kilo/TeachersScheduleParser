@@ -3,6 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:view="clr-namespace:TeachersScheduleParser.MVVM.View"
+        xmlns:viewModel="clr-namespace:TeachersScheduleParser.MVVM.ViewModel"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="920"
         WindowStyle="None"
@@ -10,7 +12,12 @@
         Background="Transparent"
         AllowsTransparency="True"
         MouseDown="Window_MouseDown">
-    <Border Background="#372837" CornerRadius="15">
+    
+    <Window.DataContext>
+        <viewModel:MainViewModel/>
+    </Window.DataContext>
+    
+    <Border Background="#240D24" CornerRadius="15">
 
         <Grid>
             <Grid.ColumnDefinitions>
@@ -70,7 +77,8 @@
 
             </StackPanel>
 
-            <ContentControl Grid.Row="1" Grid.Column="1" Margin="10">
+            <ContentControl Grid.Row="1" Grid.Column="1" Margin="10"
+                            Content="{Binding CurrentView}">
 
             </ContentControl>
 

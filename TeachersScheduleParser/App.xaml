@@ -1,13 +1,21 @@
 ﻿<Application x:Class="TeachersScheduleParser.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:TeachersScheduleParser">
+             xmlns:local="clr-namespace:TeachersScheduleParser"
+             xmlns:view="clr-namespace:TeachersScheduleParser.MVVM.View"
+             xmlns:viewModel="clr-namespace:TeachersScheduleParser.MVVM.ViewModel">
     <Application.Resources>
          <ResourceDictionary>
              <ResourceDictionary.MergedDictionaries>
                  <ResourceDictionary Source="Design/Theme/MenuButtonTheme.xaml"/>
                  <ResourceDictionary Source="Design/Theme/ApplicationWindowButtons.xaml"/>
+                 <ResourceDictionary Source="Design/Theme/DataGridStyle.xaml"/>
              </ResourceDictionary.MergedDictionaries>
+             
+             <DataTemplate DataType="{x:Type viewModel:ClientsListViewModel}">
+                 <view:ClientListView/>
+             </DataTemplate>
+             
          </ResourceDictionary>
     </Application.Resources>
 </Application>
