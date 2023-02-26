@@ -64,7 +64,7 @@ namespace TeachersScheduleParser.Runtime.Utils
             
             var schedulesDataModelInstance = new SchedulesDataModel(jsonReader, fileStreamDataReader);
 
-            serviceCollection.AddSingleton<IReactiveValue<Schedule[]>>(schedulesDataModelInstance);
+            serviceCollection.AddSingleton<IAsyncReactiveValue<Schedule[]>>(schedulesDataModelInstance);
 
             serviceCollection.AddSingleton<IDataContainerModel<Schedule[]>>(schedulesDataModelInstance);
         }

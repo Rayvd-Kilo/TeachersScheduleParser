@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 using DataReaders.Readers.Interfaces;
 using DataReaders.Utils;
@@ -11,11 +12,11 @@ using TeachersScheduleParser.Runtime.Structs;
 
 namespace TeachersScheduleParser.Runtime.Models;
 
-public class SchedulesDataModel : IDataContainerModel<Schedule[]>, IReactiveValue<Schedule[]>
+public class SchedulesDataModel : IDataContainerModel<Schedule[]>, IAsyncReactiveValue<Schedule[]>
 {
-    private event Action<Schedule[]>? ValueChanged;
+    private event Func<Schedule[], Task>? ValueChanged;
 
-    event Action<Schedule[]>? IReactiveValue<Schedule[]>.ValueChanged
+    event Func<Schedule[], Task>? IAsyncReactiveValue<Schedule[]>.ValueChangedAsync
     {
         add => ValueChanged += value;
         remove => ValueChanged -= value;
