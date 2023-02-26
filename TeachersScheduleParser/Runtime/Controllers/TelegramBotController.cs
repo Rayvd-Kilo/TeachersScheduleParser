@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using TeachersScheduleParser.Runtime.Enums;
 using TeachersScheduleParser.Runtime.Interfaces;
 using TeachersScheduleParser.Runtime.Structs;
+using TeachersScheduleParser.Runtime.Utils;
 
 using Telegram.Bot;
 using Telegram.Bot.Polling;
@@ -36,7 +37,7 @@ public class TelegramBotController : IAsyncStartable, IDisposable
     
     private readonly IAsyncReactiveValue<ClientData> _reactiveClientData;
 
-    private readonly IReactiveValue<Schedule[]> _reactiveValue;
+    private readonly IAsyncReactiveValue<Schedule[]> _reactiveValue;
     
     private readonly IAsyncResultHandler<Exception> _errorHandler;
     
@@ -56,7 +57,7 @@ public class TelegramBotController : IAsyncStartable, IDisposable
 
     public TelegramBotController(
         IDataContainerModel<Schedule[]> schedulesContainerModel,
-        IReactiveValue<Schedule[]> reactiveValue,
+        IAsyncReactiveValue<Schedule[]> reactiveValue,
         IDataContainerModel<ClientData[]> clientsDataContainerModel,
         IAsyncReactiveValue<ClientData> reactiveClientData,
         IAsyncResultHandler<Exception> errorHandler,
@@ -100,9 +101,11 @@ public class TelegramBotController : IAsyncStartable, IDisposable
 
         _schedules = _schedulesContainerModel.GetData() ?? Array.Empty<Schedule>();
         
-        _reactiveValue.ValueChanged += UpdateSchedules;
+        _reactiveValue.ValueChangedAsync += UpdateSchedulesAsync;
         _reactiveClientData.ValueChangedAsync += HandleClientDataUpdateAsync;
-        
+
+        await SendOverlayScheduleAsync(_configurationData.ModeratorData);
+
         if (_versionData.IsOutdated)
         {
             foreach (var clientData in _clientsDataContainerModel.GetData()!)
@@ -122,7 +125,7 @@ public class TelegramBotController : IAsyncStartable, IDisposable
     {
         _cancellationTokenSource.Dispose();
 
-        _reactiveValue.ValueChanged -= UpdateSchedules;
+        _reactiveValue.ValueChangedAsync -= UpdateSchedulesAsync;
         _reactiveClientData.ValueChangedAsync -= HandleClientDataUpdateAsync;
     }
     
@@ -277,7 +280,7 @@ public class TelegramBotController : IAsyncStartable, IDisposable
         }
     }
 
-    private void UpdateSchedules(Schedule[] schedules)
+    private async Task UpdateSchedulesAsync(Schedule[] schedules)
     {
         _schedules = schedules;
         
@@ -294,6 +297,8 @@ public class TelegramBotController : IAsyncStartable, IDisposable
                             clientStatus.RequirePersonType, Enums.UpdateType.DataUpdateRequired, clientStatus.LastMessage)});
                 }
             }
+            
+            await SendOverlayScheduleAsync(_configurationData.ModeratorData);
         }
     }
 
@@ -309,6 +314,22 @@ public class TelegramBotController : IAsyncStartable, IDisposable
         await _botClient.SendTextMessageAsync(clientData.ChatId, _schedules.First
             (x => x.PersonData.FullName.Contains(clientData.LastMessage)).ToString(),
             cancellationToken: _cancellationTokenSource.Token);
+    }
+
+    private async Task SendOverlayScheduleAsync(ClientData clientData)
+    {
+        var overlayList = _schedules.GetOverlaySubjects();
+
+        if (overlayList.Length > 0)
+        {
+            await _botClient.SendTextMessageAsync(clientData.ChatId, _configurationData.OverlayFound);
+            
+            foreach (var overlaySubject in overlayList)
+            {
+                await _botClient.SendTextMessageAsync(clientData.ChatId, overlaySubject.ToString(PersonType.Group),
+                    cancellationToken: _cancellationTokenSource.Token);
+            }
+        }
     }
 
     private async Task SendWrongInputErrorAsync(ClientData clientData)

@@ -31,7 +31,11 @@ public struct TelegramBotConfigurationData
 
     [JsonProperty] public readonly string ReportEndMessage;
 
+    [JsonProperty] public readonly string OverlayFound;
+
     [JsonProperty] public readonly MarkupValue<PersonType, string>[] RegistrationChoices;
+
+    [JsonProperty] public readonly ClientData ModeratorData;
 
     public TelegramBotConfigurationData(
         string botAccessToken,
@@ -45,7 +49,8 @@ public struct TelegramBotConfigurationData
         string clientBannedMessage,
         string reportStartMessage,
         string reportEndMessage,
-        MarkupValue<PersonType, string>[] registrationChoices)
+        MarkupValue<PersonType, string>[] registrationChoices,
+        ClientData moderatorData, string overlayFound)
     {
         BotAccessToken = botAccessToken;
         NullDataMessage = nullDataMessage;
@@ -59,5 +64,7 @@ public struct TelegramBotConfigurationData
         ReportStartMessage = reportStartMessage;
         ReportEndMessage = reportEndMessage;
         RegistrationChoices = registrationChoices;
+        ModeratorData = moderatorData;
+        OverlayFound = overlayFound;
     }
 }
