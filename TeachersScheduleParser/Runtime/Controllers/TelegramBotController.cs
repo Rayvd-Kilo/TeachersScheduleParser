@@ -104,8 +104,6 @@ public class TelegramBotController : IAsyncStartable, IDisposable
         _reactiveValue.ValueChangedAsync += UpdateSchedulesAsync;
         _reactiveClientData.ValueChangedAsync += HandleClientDataUpdateAsync;
 
-        await SendOverlayScheduleAsync(_configurationData.ModeratorData);
-
         if (_versionData.IsOutdated)
         {
             foreach (var clientData in _clientsDataContainerModel.GetData()!)
@@ -155,7 +153,7 @@ public class TelegramBotController : IAsyncStartable, IDisposable
 
         var filteredData = _schedules.Where(x => x.PersonData.PersonType.Equals(targetType)).ToArray();
         
-        for (var index = 1; index < filteredData.Length; index++)
+        for (var index = 1; index < filteredData.Length + 1; index++)
         {
             cols.Add(new KeyboardButton(filteredData[index - 1].PersonData.FullName));
             
@@ -164,6 +162,11 @@ public class TelegramBotController : IAsyncStartable, IDisposable
             rows.Add(cols.ToArray());
             
             cols = new List<KeyboardButton>();
+        }
+
+        if (cols.Count > 0)
+        {
+            rows.Add(cols.ToArray());
         }
 
         var keyboardMarkup = new ReplyKeyboardMarkup(rows.ToArray());
