@@ -31,7 +31,7 @@ namespace TeachersScheduleParser.Runtime.Creators
             _weekendInstruction = dataReader.ReadData(fileReader, _weekendInstructionsFilePath);
         }
         
-        public Subject CreateSubject(string[] rowData, bool isDaily)
+        public Subject CreateSubject(string[] rowData, bool isDaily, string dateValue)
         {
             var subjectNumber = int.Parse(rowData[1]);
 
@@ -46,7 +46,7 @@ namespace TeachersScheduleParser.Runtime.Creators
             var subjectGroup = _regexReader.GetMatch(rowData[0]).Value;
 
             return new Subject(subjectNumber, subjectTime.ConvertToStringTime(), subjectName,
-                subjectName.ConvertToSubject(), subjectCabinet, teacherName, subjectGroup);
+                subjectName.ConvertToSubject(), subjectCabinet, teacherName, subjectGroup, dateValue);
         }
 
         private int GetTimeBySubjectNumber(int subjectNumber, bool isDaily)

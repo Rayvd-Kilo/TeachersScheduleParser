@@ -33,6 +33,12 @@ public static class ScheduleExtensions
                     overlaySubjectsList.Add(subject);
                 }
             }
+
+            var list = dailySchedule.Subjects.GroupBy(x => x.SubjectOrderNumber)
+                .Where(x => x.Count() > 1)
+                .SelectMany(x => x).ToList();
+            
+            overlaySubjectsList.AddRange(list);
         }
 
         return overlaySubjectsList.ToArray();

@@ -43,7 +43,7 @@ namespace TeachersScheduleParser.Runtime.Creators
                     {
                         var isDaily = !dateValue.Contains(WeekendKey);
 
-                        var subject = _subjectCreator.CreateSubject(dataRow, isDaily);
+                        var subject = _subjectCreator.CreateSubject(dataRow, isDaily, dateValue);
 
                         if (subject.SubjectName.Equals(string.Empty))
                         {
@@ -56,7 +56,7 @@ namespace TeachersScheduleParser.Runtime.Creators
                             var index = subjects.IndexOf(subjects.First(x => x.SubjectName.Equals(subject.SubjectName)
                                                                  && x.SubjectTime.Equals(subject.SubjectTime)));
 
-                            subjects[index] = RewriteSubjectGroup(subjects[index], subject.Group);
+                            subjects[index] = RewriteSubjectGroup(subjects[index], subject.Group, dateValue);
                             
                             continue;
                         }
@@ -69,12 +69,12 @@ namespace TeachersScheduleParser.Runtime.Creators
             return new DailySchedule(dateValue, subjects.OrderBy(x => x.SubjectOrderNumber).ToArray());
         }
 
-        private Subject RewriteSubjectGroup(Subject oldSubject, string newGroupValue)
+        private Subject RewriteSubjectGroup(Subject oldSubject, string newGroupValue, string dateValue)
         {
             var newGroupText = _regexReader.GetMatch(oldSubject.Group).Value + "," + _regexReader.GetMatch(newGroupValue).Value;
 
             return new Subject(oldSubject.SubjectOrderNumber, oldSubject.SubjectTime, oldSubject.SubjectName,
-                oldSubject.SubjectType, oldSubject.Cabinet, oldSubject.TeacherName, newGroupText);
+                oldSubject.SubjectType, oldSubject.Cabinet, oldSubject.TeacherName, newGroupText, dateValue);
         }
 
         private bool HasTargetPerson(PersonData personData, string[,] matrix)

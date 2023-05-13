@@ -4,5 +4,6 @@ public enum PersonType
 {
     None = 0,
     Teacher = 1,
-    Group = 2
+    Group = 2,
+    Moderator = 3
 }

@@ -20,9 +20,11 @@ namespace TeachersScheduleParser.Runtime.Structs
         public string TeacherName { get; }
         
         public string Group { get; private set; }
+        
+        public string Date { get; private set; }
 
         public Subject(int subjectOrderNumber, string subjectTime, string subjectName, SubjectType subjectType,
-            string cabinet, string teacherName, string group)
+            string cabinet, string teacherName, string group, string date)
         {
             SubjectOrderNumber = subjectOrderNumber;
             SubjectTime = subjectTime;
@@ -31,6 +33,7 @@ namespace TeachersScheduleParser.Runtime.Structs
             Cabinet = cabinet;
             TeacherName = teacherName;
             Group = group;
+            Date = date;
         }
 
         public string ToString(PersonType personType)
@@ -46,6 +49,12 @@ namespace TeachersScheduleParser.Runtime.Structs
                            $" Кабинет: {Cabinet};";
                 case PersonType.Teacher:
                     return ToString();
+                case PersonType.Moderator:
+                    return $" {Date} \n" +
+                           $" {SubjectOrderNumber}. {SubjectName}; \n" +
+                           $" Преподаватель: {TeacherName}; \n" +
+                           $" Группы: {Group}; \n" +
+                           $" Кабинет: {Cabinet};";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(personType), personType, null);
             }
