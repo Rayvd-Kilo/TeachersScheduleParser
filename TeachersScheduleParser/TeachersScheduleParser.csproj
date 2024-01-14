@@ -9,7 +9,7 @@
 
     <ItemGroup>
       <Reference Include="DataReaders, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\DataReaders\DataReaders\bin\Debug\net6.0\DataReaders.dll</HintPath>
+        <HintPath>..\..\DataReaders\DataReaders\bin\Release\net6.0\DataReaders.dll</HintPath>
       </Reference>
     </ItemGroup>
 

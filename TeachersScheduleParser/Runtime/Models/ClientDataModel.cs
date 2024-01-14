@@ -20,7 +20,7 @@ public class ClientDataModel : IDataContainerModel<ClientData[]>, IAsyncReactive
 { 
     public event Func<ClientData, Task>? ValueChangedAsync;
     
-    private readonly string _chatsIDsPath = FilePathGetter.GetPath("ChatsIDs.json");
+    private readonly string _chatsIDsPath = FilePathGetter.GetPath("ChatsIDs_Test.json");
     
     private readonly IDataReader<ClientData[]> _clientDataReader;
     

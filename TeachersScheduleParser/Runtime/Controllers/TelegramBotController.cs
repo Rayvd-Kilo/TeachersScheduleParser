@@ -27,7 +27,7 @@ namespace TeachersScheduleParser.Runtime.Controllers;
 
 public class TelegramBotController : IAsyncStartable, IDisposable
 {
-    private readonly string _configurationPath = FilePathGetter.GetPath("BotConfiguration.json");
+    private readonly string _configurationPath = FilePathGetter.GetPath("BotConfiguration_Test.json");
     
     private readonly string _versionDataPath = FilePathGetter.GetPath("BotVersionData.json");
     
@@ -329,7 +329,7 @@ public class TelegramBotController : IAsyncStartable, IDisposable
             
             foreach (var overlaySubject in overlayList)
             {
-                await _botClient.SendTextMessageAsync(clientData.ChatId, overlaySubject.ToString(PersonType.Group),
+                await _botClient.SendTextMessageAsync(clientData.ChatId, overlaySubject.ToString(),
                     cancellationToken: _cancellationTokenSource.Token);
             }
         }

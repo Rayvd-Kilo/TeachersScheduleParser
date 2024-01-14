@@ -38,7 +38,7 @@ namespace TeachersScheduleParser.Runtime.Utils
             serviceCollection.AddSingleton<IFileReaderDataFactory<DataSet, string>,
                 FileReaderDataFactory<DataSet, string>>();
         }
-        
+
         public static void AddDateFactory(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<ITableReader<DataInMatrix<string>>, TableReader<DataInMatrix<string>>>();

@@ -50,8 +50,7 @@ namespace TeachersScheduleParser.Runtime.Structs
                 case PersonType.Teacher:
                     return ToString();
                 case PersonType.Moderator:
-                    return $" {Date} \n" +
-                           $" {SubjectOrderNumber}. {SubjectName}; \n" +
+                    return $" {SubjectOrderNumber}. {SubjectName}; \n" +
                            $" Преподаватель: {TeacherName}; \n" +
                            $" Группы: {Group}; \n" +
                            $" Кабинет: {Cabinet};";
