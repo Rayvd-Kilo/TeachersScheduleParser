@@ -43,7 +43,7 @@ namespace TeachersScheduleParser.Runtime.Creators
                     {
                         var isDaily = !dateValue.Contains(WeekendKey);
 
-                        var subject = _subjectCreator.CreateSubject(dataRow, isDaily, dateValue);
+                        var subject = _subjectCreator.CreateSubject(dataRow, j + 1, isDaily, dateValue);
 
                         if (subject.SubjectName.Equals(string.Empty))
                         {
