@@ -77,7 +77,7 @@ namespace TeachersScheduleParser.Runtime.Services
                         ? k + (int) currentDate.MatrixIndexes.Y + offset
                         : (k - 1) + (int) currentDate.MatrixIndexes.Y + offset;
 
-                    var value = data.Tables[0].Rows[row][column].ToString()!;
+                    var value = data.Tables[0].Rows[row > data.Tables[0].Rows.Count - 1 ? row - 1 : row][column].ToString()!;
 
                     if (value == string.Empty && k == 1)
                     {
