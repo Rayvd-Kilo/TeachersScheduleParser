@@ -1,4 +1,8 @@
-﻿using System.Windows;
+﻿using System.Net.Http;
+using System.Net.Http.Json;
+using System.Net.Sockets;
+using System.Text;
+using System.Windows;
 using System.Windows.Input;
 
 using Microsoft.Win32;
@@ -42,6 +46,13 @@ namespace TeachersScheduleParser
                 var schedules = _scheduleFactory.Create(filePath);
                 
                 _dataContainerModel.SaveData(schedules);
+
+                var httpClient = new HttpClient();
+
+                using var response = 
+                    httpClient.PostAsync("http://localhost:55000/add-json", JsonContent.Create(schedules, typeof(Schedule[])));
+                
+                MessageBox.Show("Request Send");
             }
         }
         
