@@ -1,12 +1,17 @@
+using System;
+using Newtonsoft.Json;
 using TeachersScheduleParser.Runtime.Enums;
 
 namespace TeachersScheduleParser.Runtime.Structs
 {
+    [Serializable]
     public struct PersonData
     {
-        public readonly string FullName;
+        [JsonProperty]
+        public string FullName { get; }
 
-        public readonly PersonType PersonType;
+        [JsonProperty]
+        public PersonType PersonType { get; }
 
         public PersonData(string fullName, PersonType personType)
         {
